@@ -341,20 +341,25 @@ input, button, select, textarea {
                   <div class="alert alert-warning border-warning shadow-sm mb-4"><div class="d-flex justify-content-between align-items-center"><div><i class="fas fa-database fa-lg me-2"></i><strong>Backup Database</strong><div class="small text-muted">Cadangkan data surat masuk, keluar, dan user ke Spreadsheet baru.</div></div><button id="btnBackup" class="btn btn-warning fw-bold" onclick="doBackup()"><span>Backup Sekarang</span><span class="spinner-border spinner-border-sm hide" role="status"></span></button></div></div>
                   <form onsubmit="simpanSetting(event)" autocomplete="off">
                       <h6 class="text-primary border-bottom pb-2">Identitas Sekolah</h6>
-                      <h6 class="text-primary border-bottom pb-2">Identitas Sekolah</h6>
 <div class="row mb-2">
     <div class="col-md-6">
         <label class="text-success">Logo Instansi</label>
         <input type="file" id="fLogo1" class="form-control" accept="image/*">
+        <input type="hidden" id="delLogo1" value="0">
         <div class="mt-2 text-center">
-            <img id="previewLogo1" class="img-thumbnail hide" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
+            <img id="previewLogo1" class="img-thumbnail hide mb-1" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
+            <br>
+            <button type="button" class="btn btn-sm btn-outline-danger hide" id="btnHapusLogo1" onclick="hapusPreview(1)"><i class="fas fa-trash"></i> Hapus Logo</button>
         </div>
     </div>
     <div class="col-md-6">
         <label class="text-success">Logo Sekolah</label>
         <input type="file" id="fLogo2" class="form-control" accept="image/*">
+        <input type="hidden" id="delLogo2" value="0">
         <div class="mt-2 text-center">
-            <img id="previewLogo2" class="img-thumbnail hide" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
+            <img id="previewLogo2" class="img-thumbnail hide mb-1" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
+            <br>
+            <button type="button" class="btn btn-sm btn-outline-danger hide" id="btnHapusLogo2" onclick="hapusPreview(2)"><i class="fas fa-trash"></i> Hapus Logo</button>
         </div>
     </div>
 </div>
@@ -527,8 +532,15 @@ input, button, select, textarea {
     const offset = dateNow.getTimezoneOffset() * 60000;
     const today = (new Date(dateNow - offset)).toISOString().slice(0, 10);
 
-    $('#fLogo1').on('change', function() { cropImageSquare(this.files[0], '#previewLogo1'); });
-    $('#fLogo2').on('change', function() { cropImageSquare(this.files[0], '#previewLogo2'); });
+    // 2. Cari event listener 'change' fLogo1 dan fLogo2, lalu GANTI jadi ini:
+$('#fLogo1').on('change', function() { 
+    $('#delLogo1').val('0'); // Batal hapus jika admin memilih file baru
+    cropImageSquare(this.files[0], '#previewLogo1').then(() => { $('#btnHapusLogo1').removeClass('hide'); }); 
+});
+$('#fLogo2').on('change', function() { 
+    $('#delLogo2').val('0'); 
+    cropImageSquare(this.files[0], '#previewLogo2').then(() => { $('#btnHapusLogo2').removeClass('hide'); }); 
+});
     $('#filterM_Start, #filterM_End, #filterK_Start, #filterK_End, #inpTglSurat, #inpTglSaja').val(today);
     $('#selKodeArsip').select2({ theme: "bootstrap-5", width: '100%', dropdownParent: $('#formGen').parent() });
     $('#inpNoUrut').on('change blur', function() { formatNomorUrut(this); updatePreview(); });
@@ -555,19 +567,46 @@ input, button, select, textarea {
       if(!s) return;
       localStorage.setItem('sidimas_settings', JSON.stringify(s));
       if(s.app_color) document.documentElement.style.setProperty('--main-color', s.app_color);
+     
+     // Untuk Logo 1 (Instansi)
+      if(s.logo_instansi && s.logo_instansi.length>50) { 
+          $('#logLogo1, #logoKiri').attr('src', s.logo_instansi).show(); 
+          // Tampilkan juga di menu Pengaturan
+          $('#previewLogo1').attr('src', s.logo_instansi).removeClass('hide');
+          $('#btnHapusLogo1').removeClass('hide');
+          $('#delLogo1').val('0');
+      } else { 
+          $('#logLogo1, #logoKiri').hide(); 
+          // Sembunyikan dari menu Pengaturan jika tidak ada
+          $('#previewLogo1').addClass('hide');
+          $('#btnHapusLogo1').addClass('hide');
+      }
       
-      if(s.logo_instansi && s.logo_instansi.length>50) { $('#logLogo1, #logoKiri').attr('src', s.logo_instansi).show(); } else { $('#logLogo1, #logoKiri').hide(); }
-      if(s.logo_sekolah && s.logo_sekolah.length>50) { $('#logLogo2, #logoKanan').attr('src', s.logo_sekolah).show(); } else { $('#logLogo2, #logoKanan').hide(); }
-      
-      // Menampilkan Instansi
+      // Untuk Logo 2 (Sekolah)
+      if(s.logo_sekolah && s.logo_sekolah.length>50) { 
+          $('#logLogo2, #logoKanan').attr('src', s.logo_sekolah).show(); 
+          // Tampilkan juga di menu Pengaturan
+          $('#previewLogo2').attr('src', s.logo_sekolah).removeClass('hide');
+          $('#btnHapusLogo2').removeClass('hide');
+          $('#delLogo2').val('0');
+      } else { 
+          $('#logLogo2, #logoKanan').hide(); 
+          // Sembunyikan dari menu Pengaturan jika tidak ada
+          $('#previewLogo2').addClass('hide');
+          $('#btnHapusLogo2').addClass('hide');
+      }
+     // Menampilkan Instansi
       $('#logInstansi').text(s.nama_instansi || ''); 
       
-      // Menampilkan OPD secara dinamis (muncul jika ada isi, hilang jika kosong)
+      // Menampilkan OPD secara dinamis (menggunakan removeClass alih-alih .show)
       if (s.nama_opd && s.nama_opd.trim() !== '') {
-          $('#logOpd').text(s.nama_opd).show();
+          $('#logOpd').text(s.nama_opd).removeClass('hide');
       } else {
-          $('#logOpd').hide();
+          $('#logOpd').addClass('hide');
       }
+      
+      // Menampilkan Nama Sekolah
+      $('#logSekolah').text(s.nama_sekolah || 'LOADING...');
       
       // Menampilkan Nama Sekolah
       $('#logSekolah').text(s.nama_sekolah || 'LOADING...');
@@ -727,6 +766,34 @@ input, button, select, textarea {
   }
   function togglePass() { const x=document.getElementById("p"); x.type=(x.type==="password")?"text":"password"; }
 
+
+  // 1. Tambahkan fungsi baru ini di mana saja di dalam tag <script>
+function hapusPreview(no) {
+    $('#fLogo' + no).val(''); // Reset input file
+    $('#previewLogo' + no).addClass('hide').attr('src', ''); // Sembunyikan gambar
+    $('#btnHapusLogo' + no).addClass('hide'); // Sembunyikan tombol hapus
+    $('#delLogo' + no).val('1'); // Beri sinyal ke sistem untuk menghapus dari database
+}
+
+
+// 3. GANTI fungsi simpanSetting menjadi seperti ini:
+function simpanSetting(e) { 
+    e.preventDefault(); showLoadingTimer('Menyimpan Pengaturan...'); 
+    Promise.all([cropImageSquare(document.getElementById('fLogo1').files[0]), cropImageSquare(document.getElementById('fLogo2').files[0])]).then(imgs=>{ 
+        const fd=new FormData(e.target); const d=Object.fromEntries(fd); 
+        
+        // Cek apakah ada gambar baru diunggah, JIKA TIDAK cek apakah admin mengklik hapus
+        if(imgs[0]) { d.b64_instansi = imgs[0]; } else if($('#delLogo1').val() === '1') { d.b64_instansi = "DEL"; }
+        if(imgs[1]) { d.b64_sekolah = imgs[1]; } else if($('#delLogo2').val() === '1') { d.b64_sekolah = "DEL"; }
+        
+        apiCall('saveSettings', d).then(r => {
+            Swal.close(); 
+            if(r && r.success === false) { Swal.fire('Error', r.message, 'error'); } 
+            else { Swal.fire('Sukses', 'Pengaturan diterapkan', 'success'); loadInitData(); } 
+        }); 
+    }); 
+}
+
   /* --- FILE HANDLING --- */
  /* --- FUNGSI CROP GAMBAR 1:1 & PREVIEW --- */
 function cropImageSquare(file, previewId) { 
@@ -796,20 +863,6 @@ function cropImageSquare(file, previewId) {
       }); 
   }
 
-  function simpanSetting(e) { 
-    e.preventDefault(); showLoadingTimer('Menyimpan Pengaturan...'); 
-    // GANTI resizeImage MENJADI cropImageSquare
-    Promise.all([cropImageSquare(document.getElementById('fLogo1').files[0]), cropImageSquare(document.getElementById('fLogo2').files[0])]).then(imgs=>{ 
-        const fd=new FormData(e.target); const d=Object.fromEntries(fd); 
-        if(imgs[0]) d.b64_instansi=imgs[0]; if(imgs[1]) d.b64_sekolah=imgs[1]; 
-        
-        apiCall('saveSettings', d).then(r => {
-            Swal.close(); 
-            if(r && r.success === false) { Swal.fire('Error', r.message, 'error'); } 
-            else { Swal.fire('Sukses', 'Pengaturan diterapkan', 'success'); loadInitData(); } 
-        }); 
-    }); 
-}
 
 
   function doBackup() {
