@@ -37,6 +37,8 @@ input, button, select, textarea {
     .login-container { background: rgba(255, 255, 255, 0.95); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 100%; max-width: 420px; padding: 40px; text-align: center; }
     .login-logo { height: 70px; object-fit: contain; margin: 0 10px; }
     .login-instansi { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; color: #666; letter-spacing: 1px; margin-top: 10px;}
+    /* TAMBAHKAN KODE INI UNTUK OPD */
+    .login-opd { font-size: 0.95rem; font-weight: 700; text-transform: uppercase; color: #444; letter-spacing: 1px; margin-top: 2px;}
     .login-sekolah { font-size: 1.2rem; font-weight: 800; text-transform: uppercase; color: var(--main-color); margin-bottom: 15px; }
     .login-logo2 { height: 90px; object-fit: center; margin: 0 0px; }
     
@@ -111,7 +113,8 @@ input, button, select, textarea {
     <div class="login-container">
       <div class="login-logos mb-3"><img id="logLogo1" class="login-logo" src=""><img id="logLogo2" class="login-logo" src=""></div>
       <div class="login-instansi" id="logInstansi">INSTANSI</div>
-      <div class="login-sekolah" id="logSekolah">LOADING SYSTEM...</div>
+<div class="login-opd hide" id="logOpd">OPD</div>
+<div class="login-sekolah" id="logSekolah">LOADING SYSTEM...</div>
       <hr>
       <center><div>
         <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiy-QcPa6KHScTMhHyA80pZuyStlekpqfdHVhyphenhyphenF-D9CwYNIqLBYra6v1lIO8ndNYU-xCUQl1oBrreAxnH577Diizy_abGpPVs5ocGnfeChx9z5-VzFYMQ-rO9zz61YFXWDEL_n8Vel_JgrL_AHngRpetF0deDJNQ8H0l4j4qUjDwVWpn2kf6_q2UBKGN8tg/s709/logo%20sidimas%20png.png" alt="Logo" class="login-logo2">
@@ -556,8 +559,18 @@ input, button, select, textarea {
       if(s.logo_instansi && s.logo_instansi.length>50) { $('#logLogo1, #logoKiri').attr('src', s.logo_instansi).show(); } else { $('#logLogo1, #logoKiri').hide(); }
       if(s.logo_sekolah && s.logo_sekolah.length>50) { $('#logLogo2, #logoKanan').attr('src', s.logo_sekolah).show(); } else { $('#logLogo2, #logoKanan').hide(); }
       
-      $('#logInstansi').text((s.nama_instansi||'')+' '+(s.nama_opd||'')); 
-      $('#logSekolah').text(s.nama_sekolah||'LOADING...');
+      // Menampilkan Instansi
+      $('#logInstansi').text(s.nama_instansi || ''); 
+      
+      // Menampilkan OPD secara dinamis (muncul jika ada isi, hilang jika kosong)
+      if (s.nama_opd && s.nama_opd.trim() !== '') {
+          $('#logOpd').text(s.nama_opd).show();
+      } else {
+          $('#logOpd').hide();
+      }
+      
+      // Menampilkan Nama Sekolah
+      $('#logSekolah').text(s.nama_sekolah || 'LOADING...');
       $('#txtInstansi').text(s.nama_instansi); $('#txtOpd').text(s.nama_opd); $('#txtSekolah').text(s.nama_sekolah); 
       $('#txtAlamat').text(s.alamat_sekolah); $('#txtEmail').text(s.email_sekolah); $('#txtWeb').text(s.website_sekolah);
       
