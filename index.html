@@ -498,17 +498,53 @@ input, button, select, textarea {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   
   <script>
-  /* --- KONFIGURASI API (URL DARI GOOGLE APPS SCRIPT) --- */
-  // NANTI GANTI LINK DI BAWAH INI DENGAN LINK HASIL DEPLOY APPS SCRIPT KAMU
-  const API_URL = "https://script.google.com/a/macros/admin.sma.belajar.id/s/AKfycbwEAXkKQrY_lZbkHOVOEy7_vjwWRf8XT1x6JrKVy0dI61ZiCTtBS8pXf96zSbS0DVTdDQ/exec"; 
 
+/* --- KONFIGURASI DATABASE BACKEND (MULTI-TENANT VIA URL) --- */
+  // Tambahkan daftar sekolah di sini. Kunci (sebelah kiri) harus huruf KECIL semua.
+  // Cara aksesnya nanti: domain.github.io/sidimas/?id=demo atau ?id=sman1
+  const DAFTAR_BACKEND = {
+      "demo": "https://script.google.com/a/macros/admin.sma.belajar.id/s/AKfycbw9VsFQ6H7nmX9mRqYp0q8q9VuQ5X-5FxXR1L2jS8QJiNzb3O_w5p4_K3lC96SMlAnZ/exec",
+      "smkn1kotaternate": "https://script.google.com/macros/s/LINK_GAS_SMAN_1/exec",
+      "sman9kotajambi": "https://script.google.com/macros/s/LINK_GAS_DISDIK/exec"
+  };
+
+  let API_URL = "";
+
+  // Fungsi untuk membaca parameter '?id=' dari URL browser
+  function initTenantRouting() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let tenantId = urlParams.get('id'); 
+
+      if (tenantId) {
+          tenantId = tenantId.toLowerCase();
+          if (DAFTAR_BACKEND[tenantId]) {
+              API_URL = DAFTAR_BACKEND[tenantId];
+              // Simpan ke memori agar kalau di-refresh tanpa ?id= tetap tidak error
+              localStorage.setItem('sidimas_api_url', API_URL); 
+          } else {
+              showInvalidTenantError(); return false;
+          }
+      } else {
+          // Jika URL tidak ada ?id=, cek apakah sebelumnya sudah pernah masuk
+          API_URL = localStorage.getItem('sidimas_api_url');
+          if (!API_URL) {
+              showInvalidTenantError(); return false;
+          }
+      }
+      return true;
+  }
+
+  // Tampilan jika link salah atau tidak ada parameter ID
+  function showInvalidTenantError() {
+      $('#view-login').html('<div class="text-center text-white" style="width:100%;"><h3 class="fw-bold">Akses Ditolak</h3><p>Link aplikasi tidak valid atau Anda tidak memiliki akses.</p></div>');
+  }
 
   /* --- FUNGSI JEMBATAN PENGHUBUNG (FETCH API) --- */
   async function apiCall(actionName, payloadData = {}) {
       try {
           const response = await fetch(API_URL, {
               method: 'POST',
-              headers: { 'Content-Type': 'text/plain' }, // Pakai text/plain untuk bypass CORS preflight
+              headers: { 'Content-Type': 'text/plain' }, 
               body: JSON.stringify({ action: actionName, payload: payloadData }),
               redirect: 'follow'
           });
@@ -519,12 +555,16 @@ input, button, select, textarea {
       }
   }
 
+
   /* --- GLOBAL VARIABLES --- */
   let dbMasuk = []; 
   let dbKeluar = []; 
 
   /* --- INIT DATA & DASHBOARD --- */
   $(document).ready(function() {
+    // JALANKAN CEK URL PERTAMA KALI
+    if (!initTenantRouting()) return; // Stop loading jika link salah
+
     renderSettingsFromCache(); 
     checkSession(); 
     
@@ -532,15 +572,16 @@ input, button, select, textarea {
     const offset = dateNow.getTimezoneOffset() * 60000;
     const today = (new Date(dateNow - offset)).toISOString().slice(0, 10);
 
-    // 2. Cari event listener 'change' fLogo1 dan fLogo2, lalu GANTI jadi ini:
-$('#fLogo1').on('change', function() { 
-    $('#delLogo1').val('0'); // Batal hapus jika admin memilih file baru
-    cropImageSquare(this.files[0], '#previewLogo1').then(() => { $('#btnHapusLogo1').removeClass('hide'); }); 
-});
-$('#fLogo2').on('change', function() { 
-    $('#delLogo2').val('0'); 
-    cropImageSquare(this.files[0], '#previewLogo2').then(() => { $('#btnHapusLogo2').removeClass('hide'); }); 
-});
+    // Event listener untuk Crop Logo
+    $('#fLogo1').on('change', function() { 
+        $('#delLogo1').val('0'); // Batal hapus jika admin memilih file baru
+        cropImageSquare(this.files[0], '#previewLogo1').then(() => { $('#btnHapusLogo1').removeClass('hide'); }); 
+    });
+    $('#fLogo2').on('change', function() { 
+        $('#delLogo2').val('0'); 
+        cropImageSquare(this.files[0], '#previewLogo2').then(() => { $('#btnHapusLogo2').removeClass('hide'); }); 
+    });
+    
     $('#filterM_Start, #filterM_End, #filterK_Start, #filterK_End, #inpTglSurat, #inpTglSaja').val(today);
     $('#selKodeArsip').select2({ theme: "bootstrap-5", width: '100%', dropdownParent: $('#formGen').parent() });
     $('#inpNoUrut').on('change blur', function() { formatNomorUrut(this); updatePreview(); });
@@ -743,27 +784,36 @@ $('#fLogo2').on('change', function() {
   function prosesLogin(e) {
     e.preventDefault(); 
     setBtnLoading('#btnLogin', true, 'Memverifikasi...');
+    
     apiCall('checkLogin', { u: $('#u').val(), p: $('#p').val() })
       .then(r => {
         setBtnLoading('#btnLogin', false, 'Masuk Aplikasi');
         if (r.status) { 
-          localStorage.setItem('sidimas_user', $('#u').val()); localStorage.setItem('sidimas_role', r.role); localStorage.setItem('sidimas_nama', r.nama); 
+          localStorage.setItem('sidimas_user', $('#u').val()); 
+          localStorage.setItem('sidimas_role', r.role); 
+          localStorage.setItem('sidimas_nama', r.nama); 
+          
           $('#view-login').fadeOut(300, function() { $(this).addClass('hide').css('display','none'); $('#view-dashboard').removeClass('hide').hide().fadeIn(300); checkSession(); });
         } else { Swal.fire('Login Gagal', r.message, 'error'); }
       })
-      .catch(() => { setBtnLoading('#btnLogin', false, 'Masuk Aplikasi'); Swal.fire('Error', 'Gagal memanggil API', 'error'); });
+      .catch(() => { setBtnLoading('#btnLogin', false, 'Masuk Aplikasi'); Swal.fire('Error', 'Gagal memanggil Server', 'error'); });
   }
   
   function doLogout() { 
     Swal.fire({ title: 'Logout?', text: 'Keluar dari aplikasi?', icon: 'question', showCancelButton: true, confirmButtonText: 'Ya, Keluar' }).then(r => { 
       if(r.isConfirmed){ 
-          localStorage.clear(); 
+          // HANYA hapus data user, JANGAN hapus sidimas_api_url agar halaman login sekolah tidak error
+          localStorage.removeItem('sidimas_user');
+          localStorage.removeItem('sidimas_role');
+          localStorage.removeItem('sidimas_nama');
+          
           $('#view-dashboard').addClass('hide'); 
           $('#view-login').removeClass('hide').css('display', 'flex').hide().fadeIn(300);
           $('#u').val(''); $('#p').val(''); dbMasuk = []; dbKeluar = [];
       }
     }); 
   }
+
   function togglePass() { const x=document.getElementById("p"); x.type=(x.type==="password")?"text":"password"; }
 
 
@@ -794,8 +844,7 @@ function simpanSetting(e) {
     }); 
 }
 
-  /* --- FILE HANDLING --- */
- /* --- FUNGSI CROP GAMBAR 1:1 & PREVIEW --- */
+/* --- FUNGSI CROP GAMBAR 1:1 & PREVIEW --- */
 function cropImageSquare(file, previewId) { 
     return new Promise(res => { 
         if(!file) { res(null); return; } 
@@ -804,24 +853,25 @@ function cropImageSquare(file, previewId) {
             const i = new Image(); 
             i.onload = () => { 
                 const canvas = document.createElement('canvas'); 
-                // Cari sisi terpendek untuk rasio 1:1 sempurna
+                // Cari sisi terpendek agar jadi persegi sempurna
                 const size = Math.min(i.width, i.height); 
-                // Titik mulai crop agar gambar diambil dari tengah
+                // Hitung titik tengah untuk memotong
                 const startX = (i.width - size) / 2; 
                 const startY = (i.height - size) / 2; 
                 
                 canvas.width = 150; canvas.height = 150; 
                 const ctx = canvas.getContext('2d');
-                // Beri background putih jika logo transparan (PNG) agar tidak hitam
+                
+                // Beri background putih agar PNG transparan tidak jadi hitam
                 ctx.fillStyle = "#ffffff"; 
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
-                // Potong dan tempel ke canvas
+                // Proses potong gambar
                 ctx.drawImage(i, startX, startY, size, size, 0, 0, canvas.width, canvas.height); 
                 
                 const b64 = canvas.toDataURL('image/png', 0.9); 
                 
-                // Tampilkan ke elemen preview jika ID diberikan
+                // Tampilkan ke layar jika ada ID preview
                 if(previewId) { $(previewId).attr('src', b64).removeClass('hide').show(); }
                 res(b64); 
             }; 
