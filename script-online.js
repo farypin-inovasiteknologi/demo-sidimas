@@ -190,7 +190,7 @@ $(document).ready(function () {
 
     renderSettingsFromCache();
     checkSession();
-    
+
     // Sembunyikan tombol sinkronisasi karena online version real-time
     $('#btnSyncMain').hide();
 
@@ -683,8 +683,8 @@ function formatRentangTglIndo(tglMulai, tglSelesai) {
     if (isNaN(dMulai)) return tglMulai;
 
     const optsHari = { day: 'numeric' };
-    const optsBln  = { month: 'long' };
-    const optsThn  = { year: 'numeric' };
+    const optsBln = { month: 'long' };
+    const optsThn = { year: 'numeric' };
     const optsLengkap = { day: 'numeric', month: 'long', year: 'numeric' };
 
     // Jika tidak ada tanggal selesai atau sama dengan tanggal mulai
@@ -704,8 +704,8 @@ function formatRentangTglIndo(tglMulai, tglSelesai) {
         // Bulan & tahun sama: '6-9 Juli 2026'
         const tgl1 = dMulai.toLocaleDateString('id-ID', optsHari);
         const tgl2 = dSelesai.toLocaleDateString('id-ID', optsHari);
-        const bln  = dMulai.toLocaleDateString('id-ID', optsBln);
-        const thn  = dMulai.toLocaleDateString('id-ID', optsThn);
+        const bln = dMulai.toLocaleDateString('id-ID', optsBln);
+        const thn = dMulai.toLocaleDateString('id-ID', optsThn);
         return `${tgl1}-${tgl2} ${bln} ${thn}`;
     } else {
         // Beda bulan atau tahun: '6 Juli - 9 Agustus 2026'
@@ -745,7 +745,7 @@ function injectKopSuratOffline(zip, s) {
             relsStr = relsStr.replace('</Relationships>',
                 '<Relationship Id="rIdKopL1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/kop_logo1.png"/></Relationships>');
             logo1Xml = makeDrawXml('rIdKopL1', 901);
-        } catch(e) { console.warn('Logo1 gagal:', e); }
+        } catch (e) { console.warn('Logo1 gagal:', e); }
     }
 
     if (s.logo_sekolah && s.logo_sekolah.length > 50) {
@@ -754,7 +754,7 @@ function injectKopSuratOffline(zip, s) {
             relsStr = relsStr.replace('</Relationships>',
                 '<Relationship Id="rIdKopL2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/kop_logo2.png"/></Relationships>');
             logo2Xml = makeDrawXml('rIdKopL2', 902);
-        } catch(e) { console.warn('Logo2 gagal:', e); }
+        } catch (e) { console.warn('Logo2 gagal:', e); }
     }
 
     zip.file('word/_rels/document.xml.rels', relsStr);
@@ -763,14 +763,14 @@ function injectKopSuratOffline(zip, s) {
     function pTxt(text, bold, sz) {
         if (!text) return '';
         const b = bold ? '<w:b/>' : '';
-        return `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="0" w:before="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>${b}<w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/></w:rPr><w:t xml:space="preserve">${text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</w:t></w:r></w:p>`;
+        return `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="0" w:before="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>${b}<w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/></w:rPr><w:t xml:space="preserve">${text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</w:t></w:r></w:p>`;
     }
 
     // Susun konten teks kop
     let tengah = '';
     if (s.nama_instansi) tengah += pTxt((s.nama_instansi).toUpperCase(), false, 22);
-    if (s.nama_opd)      tengah += pTxt((s.nama_opd).toUpperCase(), true, 26);
-    if (s.nama_sekolah)  tengah += pTxt((s.nama_sekolah).toUpperCase(), true, 30);
+    if (s.nama_opd) tengah += pTxt((s.nama_opd).toUpperCase(), true, 26);
+    if (s.nama_sekolah) tengah += pTxt((s.nama_sekolah).toUpperCase(), true, 30);
     if (s.alamat_sekolah) tengah += pTxt(s.alamat_sekolah, false, 20);
     const kontak = [s.email_sekolah && ('Email: ' + s.email_sekolah), s.website_sekolah && ('Website: ' + s.website_sekolah)].filter(Boolean).join(' | ');
     if (kontak) tengah += pTxt(kontak, false, 18);
@@ -852,7 +852,7 @@ function submitGenerate(e) {
 
             // ── INJEKSI KOP SURAT OTOMATIS (Tanpa library tambahan) ──
             if (dataObj.tanpaKop !== 'ya') {
-                try { injectKopSuratOffline(zip, sKop); } catch(e) { console.error("Gagal injeksi kop", e); }
+                try { injectKopSuratOffline(zip, sKop); } catch (e) { console.error("Gagal injeksi kop", e); }
             }
 
             const doc = new window.docxtemplater(zip, {
@@ -914,12 +914,12 @@ function submitGenerate(e) {
             tags['TEMBUSAN'] = dataObj.tembusanSurat || '';
 
             // ── TAG SURAT UNDANGAN / ACARA ──
-            tags['HARI_ACARA']    = dataObj.hariAcara    || '';
+            tags['HARI_ACARA'] = dataObj.hariAcara || '';
             tags['TANGGAL_ACARA'] = dataObj.tglAcaraIndo || '';
-            tags['WAKTU_ACARA']   = dataObj.waktuAcara   || '';
-            tags['TEMPAT_ACARA']  = dataObj.tempatAcara  || '';
-            tags['ACARA_DETAIL']  = dataObj.acaraDetail  || '';
-            tags['TUJUAN_JABATAN']= dataObj.tujuanJabatan|| dataObj.tujuanBidang || '';
+            tags['WAKTU_ACARA'] = dataObj.waktuAcara || '';
+            tags['TEMPAT_ACARA'] = dataObj.tempatAcara || '';
+            tags['ACARA_DETAIL'] = dataObj.acaraDetail || '';
+            tags['TUJUAN_JABATAN'] = dataObj.tujuanJabatan || dataObj.tujuanBidang || '';
 
             // ── TAG LAMPIRAN SURAT ──
             tags['JUDUL_TABEL'] = dataObj.judulTabel || '';
@@ -941,10 +941,10 @@ function submitGenerate(e) {
             // ── TAG SPD (Surat Perjalanan Dinas) ──
             tags['SPPD_ANGKUTAN'] = dataObj.sppdAngkutan || '';
             tags['SPPD_TUJUAN'] = dataObj.sppdTujuan || '';
-            tags['SPPD_TGL_MULAI']    = formatTglIndo(dataObj.sppdTglMulai);
-            tags['SPPD_TGL_SELESAI']  = formatTglIndo(dataObj.sppdTglSelesai);
-            tags['SPPD_TGL_RENTANG']  = formatRentangTglIndo(dataObj.sppdTglMulai, dataObj.sppdTglSelesai);
-            tags['SPPD_HARI_MULAI']   = formatHariIndo(dataObj.sppdTglMulai);
+            tags['SPPD_TGL_MULAI'] = formatTglIndo(dataObj.sppdTglMulai);
+            tags['SPPD_TGL_SELESAI'] = formatTglIndo(dataObj.sppdTglSelesai);
+            tags['SPPD_TGL_RENTANG'] = formatRentangTglIndo(dataObj.sppdTglMulai, dataObj.sppdTglSelesai);
+            tags['SPPD_HARI_MULAI'] = formatHariIndo(dataObj.sppdTglMulai);
             tags['SPPD_HARI_SELESAI'] = formatHariIndo(dataObj.sppdTglSelesai);
             tags['SPPD_LAMA'] = dataObj.sppdLama || '';
 
@@ -959,35 +959,35 @@ function submitGenerate(e) {
             tags['SISWA_KET'] = dataObj.siswaKet || '';
 
             // ── TAG SURAT TUGAS (SPT) ──
-            tags['SPT_HARI']            = formatHariIndo(dataObj.sptMulai);
-            tags['SPT_TANGGAL']         = formatTglIndo(dataObj.sptMulai);
-            tags['SPT_TGL_RENTANG']     = formatRentangTglIndo(dataObj.sptMulai, dataObj.sptSelesai);
-            tags['SPT_HARI_SELESAI']    = formatHariIndo(dataObj.sptSelesai);
+            tags['SPT_HARI'] = formatHariIndo(dataObj.sptMulai);
+            tags['SPT_TANGGAL'] = formatTglIndo(dataObj.sptMulai);
+            tags['SPT_TGL_RENTANG'] = formatRentangTglIndo(dataObj.sptMulai, dataObj.sptSelesai);
+            tags['SPT_HARI_SELESAI'] = formatHariIndo(dataObj.sptSelesai);
             tags['SPT_TANGGAL_SELESAI'] = formatTglIndo(dataObj.sptSelesai);
             tags['SPT_TEMPAT'] = dataObj.sptTempat || '';
-            tags['SPT_WAKTU']  = dataObj.sptWaktu  || '';
+            tags['SPT_WAKTU'] = dataObj.sptWaktu || '';
 
             // ── TAG SURAT IZIN ──
-            tags['IZIN_ALASAN']      = dataObj.izinAlasan || '';
-            tags['IZIN_TGL_MULAI']   = formatTglIndo(dataObj.sppdTglMulai);
+            tags['IZIN_ALASAN'] = dataObj.izinAlasan || '';
+            tags['IZIN_TGL_MULAI'] = formatTglIndo(dataObj.sppdTglMulai);
             tags['IZIN_TGL_SELESAI'] = formatTglIndo(dataObj.sppdTglSelesai);
             tags['IZIN_TGL_RENTANG'] = formatRentangTglIndo(dataObj.sppdTglMulai, dataObj.sppdTglSelesai);
-            tags['IZIN_HARI_MULAI']  = formatHariIndo(dataObj.sppdTglMulai);
+            tags['IZIN_HARI_MULAI'] = formatHariIndo(dataObj.sppdTglMulai);
 
             // ── TAG SURAT PERNYATAAN (SPMT) ──
-            tags['SPMT_JABATAN_BARU']  = dataObj.spmtJabatanBaru || '';
-            tags['SPMT_TGL_MULAI']     = formatTglIndo(dataObj.spmtTglMulai);
-            tags['SPMT_TGL_SELESAI']   = formatTglIndo(dataObj.spmtTglSelesai);
-            tags['SPMT_TGL_RENTANG']   = formatRentangTglIndo(dataObj.spmtTglMulai, dataObj.spmtTglSelesai);
-            tags['SPMT_HARI_MULAI']    = formatHariIndo(dataObj.spmtTglMulai);
+            tags['SPMT_JABATAN_BARU'] = dataObj.spmtJabatanBaru || '';
+            tags['SPMT_TGL_MULAI'] = formatTglIndo(dataObj.spmtTglMulai);
+            tags['SPMT_TGL_SELESAI'] = formatTglIndo(dataObj.spmtTglSelesai);
+            tags['SPMT_TGL_RENTANG'] = formatRentangTglIndo(dataObj.spmtTglMulai, dataObj.spmtTglSelesai);
+            tags['SPMT_HARI_MULAI'] = formatHariIndo(dataObj.spmtTglMulai);
 
             // Tag-tag tambahan lain (pastikan tidak ada yang terlewat dari form)
             tags['TUJUAN_NIP'] = dataObj.tujuanNip || '';
             tags['TUJUAN_PANGKAT'] = dataObj.tujuanPangkat || '';
             tags['TUJUAN_BIDANG'] = dataObj.tujuanBidang || dataObj.tujuanJabatan || '';
             tags['TUJUAN_ALAMAT'] = dataObj.tujuanAlamat || '';
-            tags['DASAR_HUKUM']   = dataObj.dasarHukum   || '';
-            tags['NAMA_SEKOLAH']  = tags['NAMA_SEKOLAH'] || (s.nama_sekolah || '').toUpperCase();
+            tags['DASAR_HUKUM'] = dataObj.dasarHukum || '';
+            tags['NAMA_SEKOLAH'] = tags['NAMA_SEKOLAH'] || (s.nama_sekolah || '').toUpperCase();
 
             // ── RENDER DOCXTEMPLATER (ini akan menyatukan tag yang terpecah) ──
             doc.render(tags);
@@ -1004,7 +1004,7 @@ function submitGenerate(e) {
                     let after = xmlStr.substring(idx + marker.length);
                     let startTag = Math.max(before.lastIndexOf('<w:p '), before.lastIndexOf('<w:p>'));
                     let endTag = after.indexOf('</w:p>');
-                    
+
                     if (startTag !== -1 && endTag !== -1) {
                         xmlStr = xmlStr.substring(0, startTag) + replacement + after.substring(endTag + 6);
                         idx = xmlStr.indexOf(marker, startTag + replacement.length);
@@ -1043,7 +1043,7 @@ function submitGenerate(e) {
                         const isBold = ri === 0;
                         tblXml += '<w:tr>';
                         row.forEach(cell => {
-                            const safe = (cell || '').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                            const safe = (cell || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                             const shade = isBold ? '<w:tcPr><w:shd w:val="clear" w:color="auto" w:fill="D0E4FF"/></w:tcPr>' : '';
                             const bold = isBold ? '<w:b/>' : '';
                             tblXml += `<w:tc>${shade}<w:p><w:pPr><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>${bold}<w:sz w:val="20"/></w:rPr><w:t xml:space="preserve">${safe}</w:t></w:r></w:p></w:tc>`;
@@ -1051,9 +1051,9 @@ function submitGenerate(e) {
                         tblXml += '</w:tr>';
                     });
                     tblXml += '</w:tbl>';
-                    
+
                     finalXmlDoc = replaceParagraph(finalXmlDoc, '###TABEL_LAMPIRAN###', tblXml);
-                } catch(e) { console.warn("Tabel Lampiran Error", e); }
+                } catch (e) { console.warn("Tabel Lampiran Error", e); }
             } else {
                 finalXmlDoc = finalXmlDoc.replace(/###TABEL_LAMPIRAN###/g, '');
             }
@@ -1069,19 +1069,19 @@ function submitGenerate(e) {
                     tblXml += '<w:insideH w:val="single" w:sz="4" w:space="0" w:color="000000"/>';
                     tblXml += '<w:insideV w:val="single" w:sz="4" w:space="0" w:color="000000"/>';
                     tblXml += '</w:tblBorders></w:tblPr>';
-                    
+
                     // Grid khusus 4 kolom
                     tblXml += '<w:tblGrid><w:gridCol w:w="1000"/><w:gridCol w:w="4000"/><w:gridCol w:w="2000"/><w:gridCol w:w="3000"/></w:tblGrid>';
 
                     tblXml += '<w:tr><w:tc><w:tcPr><w:shd w:val="clear" w:color="auto" w:fill="D0E4FF"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:b/><w:sz w:val="20"/></w:rPr><w:t>No</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:shd w:val="clear" w:color="auto" w:fill="D0E4FF"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:b/><w:sz w:val="20"/></w:rPr><w:t>Jenis yang dikirim</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:shd w:val="clear" w:color="auto" w:fill="D0E4FF"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:b/><w:sz w:val="20"/></w:rPr><w:t>Banyaknya</w:t></w:r></w:p></w:tc><w:tc><w:tcPr><w:shd w:val="clear" w:color="auto" w:fill="D0E4FF"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:b/><w:sz w:val="20"/></w:rPr><w:t>Keterangan</w:t></w:r></w:p></w:tc></w:tr>';
-                    const safeIsi = (dataObj.pengantarIsi||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                    const safeJml = (dataObj.pengantarJml||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                    const safeKet = (dataObj.pengantarKet||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                    const safeIsi = (dataObj.pengantarIsi || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safeJml = (dataObj.pengantarJml || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safeKet = (dataObj.pengantarKet || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                     tblXml += `<w:tr><w:tc><w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="20"/></w:rPr><w:t>1</w:t></w:r></w:p></w:tc><w:tc><w:p><w:pPr><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="20"/></w:rPr><w:t xml:space="preserve">${safeIsi}</w:t></w:r></w:p></w:tc><w:tc><w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="20"/></w:rPr><w:t xml:space="preserve">${safeJml}</w:t></w:r></w:p></w:tc><w:tc><w:p><w:pPr><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="20"/></w:rPr><w:t xml:space="preserve">${safeKet}</w:t></w:r></w:p></w:tc></w:tr>`;
                     tblXml += '</w:tbl>';
-                    
+
                     finalXmlDoc = replaceParagraph(finalXmlDoc, '###TABEL_PENGANTAR###', tblXml);
-                } catch(e) {}
+                } catch (e) { }
             } else {
                 finalXmlDoc = finalXmlDoc.replace(/###TABEL_PENGANTAR###/g, '');
             }
@@ -1092,42 +1092,42 @@ function submitGenerate(e) {
                     let ttdXml = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/><w:tblBorders><w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/></w:tblBorders></w:tblPr>';
                     ttdXml += '<w:tblGrid><w:gridCol w:w="6000"/><w:gridCol w:w="4000"/></w:tblGrid>';
                     ttdXml += '<w:tr><w:tc><w:tcPr><w:tcW w:w="3000" w:type="pct"/></w:tcPr><w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2000" w:type="pct"/></w:tcPr>';
-                    
-                    const safeTgl = ($('#tanggalSuratFull').val() || '').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                    const safeNama = (dataObj.ttdNama || s.kepsek_nama || '').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                    const safePangkat = (dataObj.ttdPangkat || s.kepsek_pangkat || '').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                    const safeNip = (dataObj.ttdNip || s.kepsek_nip || '').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                    
+
+                    const safeTgl = ($('#tanggalSuratFull').val() || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safeNama = (dataObj.ttdNama || s.kepsek_nama || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safePangkat = (dataObj.ttdPangkat || s.kepsek_pangkat || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safeNip = (dataObj.ttdNip || s.kepsek_nip || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
                     ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">${safeTgl}</w:t></w:r></w:p>`;
                     ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">Kepala Sekolah,</w:t></w:r></w:p>`;
                     ttdXml += `<w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p><w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p><w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p>`;
                     ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:b/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">${safeNama}</w:t></w:r></w:p>`;
                     ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">${safePangkat}</w:t></w:r></w:p>`;
                     ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">NIP. ${safeNip}</w:t></w:r></w:p>`;
-                    
+
                     ttdXml += '</w:tc></w:tr></w:tbl>';
                     finalXmlDoc = replaceParagraph(finalXmlDoc, '###TTD_DINAMIS###', ttdXml);
-                } catch(e) {}
+                } catch (e) { }
             }
 
             // 4. Injeksi Orientasi Halaman
             if (dataObj.orientasiHalaman) {
                 try {
                     const targetOrient = dataObj.orientasiHalaman; // 'portrait' atau 'landscape'
-                    finalXmlDoc = finalXmlDoc.replace(/<w:pgSz\b[^>]*>/g, function(match) {
+                    finalXmlDoc = finalXmlDoc.replace(/<w:pgSz\b[^>]*>/g, function (match) {
                         let w = match.match(/w:w="([0-9]+)"/);
                         let h = match.match(/w:h="([0-9]+)"/);
                         let currOrient = match.match(/w:orient="([^"]+)"/);
-                        currOrient = currOrient ? currOrient[1] : 'portrait'; 
-                        
+                        currOrient = currOrient ? currOrient[1] : 'portrait';
+
                         if (w && h && currOrient !== targetOrient) {
                             return `<w:pgSz w:w="${h[1]}" w:h="${w[1]}" w:orient="${targetOrient}"/>`;
                         } else if (currOrient !== targetOrient && (!w || !h)) {
                             return match.replace(/>$/, ` w:orient="${targetOrient}"/>`);
                         }
-                        return match; 
+                        return match;
                     });
-                } catch(errOrient) { console.warn('Gagal mengubah orientasi halaman:', errOrient); }
+                } catch (errOrient) { console.warn('Gagal mengubah orientasi halaman:', errOrient); }
             }
 
             // Kembalikan XML yang sudah diinjeksi tabel dan orientasi ke ZIP
@@ -1237,6 +1237,15 @@ function nav(p, el) {
     if (p === 'keluar') refreshTable('keluar');
     if (p === 'users') loadUsers();
     if (p === 'buat') { loadAutoNumber(); }
+
+    // FIX: Reset tab Bootstrap di halaman Pengaturan agar tidak perlu klik 2x
+    if (p === 'setting') {
+        const triggerEl = document.querySelector('#sistem-tab');
+        if (triggerEl) {
+            const tab = new bootstrap.Tab(triggerEl);
+            tab.show();
+        }
+    }
 }
 
 
@@ -1431,14 +1440,14 @@ function submitUser(e) { e.preventDefault(); showLoadingTimer('Menyimpan User...
 /*--KHUSUS DEMO DINONAKTIFKAN EDIT DAN HAPUS--*/
 function loadUsers() {
     apiCall('getUsersList')
-    .then(r => {
-        let h = ''; r.forEach(u => {
-            h += `<tr><td>${u[0]}</td><td>******</td><td>${u[2]}</td><td>${u[3]}</td><td>
+        .then(r => {
+            let h = ''; r.forEach(u => {
+                h += `<tr><td>${u[0]}</td><td>******</td><td>${u[2]}</td><td>${u[3]}</td><td>
   <button class="btn btn-sm btn-warning" onclick="modalUser('edit','${u[0]}','${u[1]}','${u[2]}','${u[3]}')" title="Edit"><i class="fas fa-edit"></i></button>
   <button class="btn btn-sm btn-danger" onclick="delUser('${u[0]}')" title="Hapus"><i class="fas fa-trash"></i></button>
   </td></tr>`;
-        }); $('#tbody-users').html(h);
-    });
+            }); $('#tbody-users').html(h);
+        });
 }
 
 
