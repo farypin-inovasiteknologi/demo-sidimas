@@ -1320,12 +1320,32 @@ function refreshTable(j) {
 
 function renderAksi(index, jenis) {
     const row = getDataByIndex(jenis, index);
-    const currentUser = localStorage.getItem('sidimas_user'); const currentRole = localStorage.getItem('sidimas_role');
+    const currentUser = localStorage.getItem('sidimas_user');
+    const currentRole = localStorage.getItem('sidimas_role') || 'admin';
+    const isAdmin = (currentRole === 'admin' || currentRole === 'Admin');
     const creator = row[row.length - 1];
-    let isLocked = false;
-    if (currentRole !== 'Admin') { if (!creator || creator !== currentUser) { isLocked = true; } }
-    if (isLocked) { return `<span class="badge bg-secondary"><i class="fas fa-lock"></i> Locked</span>`; }
-    else { return `<div class="btn-group" role="group"><button class="btn btn-sm btn-info text-white" onclick="viewSurat('${jenis}', ${index})" title="Lihat"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-warning" onclick="editSurat('${jenis}', ${index})" title="Edit"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="delSurat('${jenis}', ${index})" title="Hapus"><i class="fas fa-trash"></i></button></div>`; }
+    
+    // Jika bukan Admin dan surat ini dibuat oleh orang lain
+    const isLocked = !isAdmin && creator && creator !== currentUser;
+    
+    if (isLocked) { 
+        return `<div class="btn-group" role="group">
+            <button class="btn btn-sm btn-info text-white" onclick="viewSurat('${jenis}', ${index})" title="Lihat"><i class="fas fa-eye"></i></button>
+            <span class="btn btn-sm btn-secondary disabled" title="Terkunci"><i class="fas fa-lock"></i></span>
+        </div>`;
+    } else { 
+        let btnHtml = `<div class="btn-group" role="group">
+            <button class="btn btn-sm btn-info text-white" onclick="viewSurat('${jenis}', ${index})" title="Lihat"><i class="fas fa-eye"></i></button>
+            <button class="btn btn-sm btn-warning" onclick="editSurat('${jenis}', ${index})" title="Edit"><i class="fas fa-edit"></i></button>`;
+        
+        // Hapus hanya untuk admin
+        if (isAdmin) {
+            btnHtml += `<button class="btn btn-sm btn-danger" onclick="delSurat('${jenis}', ${index})" title="Hapus"><i class="fas fa-trash"></i></button>`;
+        }
+        
+        btnHtml += `</div>`;
+        return btnHtml;
+    }
 }
 
 function btnFile(d) { return (!d || d.length < 5) ? '-' : `<a href="${d}" target="_blank" class="btn btn-sm btn-primary"><i class="fas fa-download"></i></a>`; }
@@ -1441,12 +1461,28 @@ function submitUser(e) { e.preventDefault(); showLoadingTimer('Menyimpan User...
 function loadUsers() {
     apiCall('getUsersList')
         .then(r => {
-            let h = ''; r.forEach(u => {
-                h += `<tr><td>${u[0]}</td><td>******</td><td>${u[2]}</td><td>${u[3]}</td><td>
-  <button class="btn btn-sm btn-warning" onclick="modalUser('edit','${u[0]}','${u[1]}','${u[2]}','${u[3]}')" title="Edit"><i class="fas fa-edit"></i></button>
-  <button class="btn btn-sm btn-danger" onclick="delUser('${u[0]}')" title="Hapus"><i class="fas fa-trash"></i></button>
-  </td></tr>`;
-            }); $('#tbody-users').html(h);
+            let h = ''; let i = 1;
+            r.forEach(u => {
+                let badgeClass = u[2] === 'admin' ? 'bg-danger' : 'bg-info text-dark';
+                let roleLabel = u[2] === 'admin' ? 'Administrator' : 'Staf/User';
+                h += `<tr>
+                    <td class="text-center">${i++}</td>
+                    <td><span class="badge bg-dark fs-6 px-3 py-2 font-monospace">${u[0]}</span></td>
+                    <td>
+                        <div class="input-group input-group-sm" style="width: 200px;">
+                            <input type="password" class="form-control font-monospace text-center" value="******" readonly style="background-color: var(--bs-secondary); color: white; border: none; font-size: 1rem;">
+                        </div>
+                    </td>
+                    <td><span class="badge ${badgeClass} px-3 py-2">${roleLabel}</span></td>
+                    <td class="text-muted small">${u[3] || '-'}</td>
+                    <td class="online-only">
+                        <button class="btn btn-sm btn-warning" onclick="modalUser('edit','${u[0]}','','${u[2]}','${u[3]}')" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="delUser('${u[0]}')" title="Hapus"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            $('#tbody-users').html(h);
+            $('.online-only').show(); // Make sure aksi column is shown
         });
 }
 
