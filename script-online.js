@@ -1463,17 +1463,19 @@ function loadUsers() {
         .then(r => {
             let h = ''; let i = 1;
             r.forEach(u => {
-                let badgeClass = u[2] === 'admin' ? 'bg-danger' : 'bg-info text-dark';
-                let roleLabel = u[2] === 'admin' ? 'Administrator' : 'Staf/User';
+                let roleStr = (u[2] || '').toString();
+                let badgeClass = roleStr.toLowerCase() === 'admin' ? 'bg-danger' : 'bg-info text-dark';
+                
                 h += `<tr>
                     <td class="text-center">${i++}</td>
                     <td><span class="badge bg-dark fs-6 px-3 py-2 font-monospace">${u[0]}</span></td>
                     <td>
                         <div class="input-group input-group-sm" style="width: 200px;">
-                            <input type="password" class="form-control font-monospace text-center" value="******" readonly style="background-color: var(--bs-secondary); color: white; border: none; font-size: 1rem;">
+                            <input type="password" class="form-control font-monospace" value="${u[1]}" readonly style="background-color: var(--bs-secondary); color: white; border: none; font-size: 1rem;">
+                            <button class="btn btn-secondary border-0" type="button" onclick="togglePassword(this)"><i class="fas fa-eye"></i></button>
                         </div>
                     </td>
-                    <td><span class="badge ${badgeClass} px-3 py-2">${roleLabel}</span></td>
+                    <td><span class="badge ${badgeClass} px-3 py-2">${roleStr}</span></td>
                     <td class="text-muted small">${u[3] || '-'}</td>
                     <td class="online-only">
                         <button class="btn btn-sm btn-warning" onclick="modalUser('edit','${u[0]}','','${u[2]}','${u[3]}')" title="Edit"><i class="fas fa-edit"></i></button>
@@ -1484,6 +1486,18 @@ function loadUsers() {
             $('#tbody-users').html(h);
             $('.online-only').show(); // Make sure aksi column is shown
         });
+}
+
+function togglePassword(btn) {
+    const input = $(btn).prev('input');
+    const icon = $(btn).find('i');
+    if (input.attr('type') === 'password') {
+        input.attr('type', 'text');
+        icon.removeClass('fa-eye').addClass('fa-eye-slash');
+    } else {
+        input.attr('type', 'password');
+        icon.removeClass('fa-eye-slash').addClass('fa-eye');
+    }
 }
 
 
