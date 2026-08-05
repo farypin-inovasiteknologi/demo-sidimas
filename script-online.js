@@ -2509,6 +2509,52 @@ window.scanImageAndAutofill = async function (fileInputId, formType) {
 
 if (document.getElementById('appVersionText')) { document.getElementById('appVersionText').innerText = APP_CONFIG.APP_VERSION || ''; }
 
+function toggleModeSpt() {
+    let mode = $('input[name="modeSpt"]:checked').val();
+    $('#sptAreaSendirian, #sptAreaKolektif, #sptAreaLampiran').addClass('hide');
+    if (mode === 'sendirian') $('#sptAreaSendirian').removeClass('hide');
+    else if (mode === 'kolektif') $('#sptAreaKolektif').removeClass('hide');
+    else if (mode === 'lampiran') $('#sptAreaLampiran').removeClass('hide');
+}
+
+function toggleModeSuket() {
+    let mode = $('input[name="modeSuket"]:checked').val();
+    $('#suketAreaSendirian, #suketAreaKolektif, #suketAreaLampiran').addClass('hide');
+    if (mode === 'sendirian') $('#suketAreaSendirian').removeClass('hide');
+    else if (mode === 'kolektif') $('#suketAreaKolektif').removeClass('hide');
+    else if (mode === 'lampiran') $('#suketAreaLampiran').removeClass('hide');
+}
+
+function toggleModeSis() {
+    let mode = $('input[name="modeSis"]:checked').val();
+    $('#sisAreaSendirian, #sisAreaKolektif, #sisAreaLampiran').addClass('hide');
+    if (mode === 'sendirian') $('#sisAreaSendirian').removeClass('hide');
+    else if (mode === 'kolektif') $('#sisAreaKolektif').removeClass('hide');
+    else if (mode === 'lampiran') $('#sisAreaLampiran').removeClass('hide');
+}
+
+function addRowKolektif(tableId) {
+    let tr = `<tr>
+        <td><input type="text" class="form-control form-control-sm" name="kol${tableId.replace('tbl', '')}Nama[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="kol${tableId.replace('tbl', '')}Nip[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="kol${tableId.replace('tbl', '')}Pangkat[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="kol${tableId.replace('tbl', '')}Jabatan[]"></td><td><input type="text" class="form-control form-control-sm" name="kol${tableId.replace('tbl', '')}Ket[]"></td><td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button></td>
+    </tr>`;
+    $(`#${tableId} tbody`).append(tr);
+}
+
+function addRowKolektifSis(tableId) {
+    let tr = `<tr>
+        <td><input type="text" class="form-control form-control-sm" name="kolSisNama[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="kolSisNis[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="kolSisTtl[]"></td>
+        <td><select class="form-select form-select-sm" name="kolSisJk[]"><option>Laki-laki</option><option>Perempuan</option></select></td>
+        <td><input type="text" class="form-control form-control-sm" name="kolSisKelas[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="kolSisOrtu[]"></td><td><input type="text" class="form-control form-control-sm" name="kolSisKet[]"></td><td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button></td>
+    </tr>`;
+    $(`#${tableId} tbody`).append(tr);
+}
+
 function toggleAtasNama() {
     if ($('#switchAtasNama').is(':checked')) {
         $('#boxAtasNama').removeClass('hide');
@@ -2516,3 +2562,8 @@ function toggleAtasNama() {
         $('#boxAtasNama').addClass('hide');
     }
 }
+
+// Sembunyikan tombol Sinkronisasi di versi Online
+$(document).ready(function () {
+    $('#btnSyncMain').addClass('d-none');
+});
