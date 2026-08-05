@@ -37,6 +37,27 @@
     <button id="btnScrollTop" class="btn btn-primary btn-scroll-top"
         onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fas fa-arrow-up"></i></button>
 
+    <!-- ZOOM CONTROLS (Khusus Desktop/Offline) -->
+    <div id="zoomControls" class="d-none d-lg-flex flex-column gap-2" style="position: fixed; bottom: 90px; right: 20px; z-index: 9999; opacity: 0.8;">
+        <button class="btn btn-dark btn-sm rounded-circle shadow" style="width: 38px; height: 38px;" onclick="zoomApp(0.1)" title="Zoom In (Perbesar)"><i class="fas fa-search-plus"></i></button>
+        <button class="btn btn-secondary btn-sm rounded-circle shadow" style="width: 38px; height: 38px;" onclick="zoomApp(0)" title="Normal (Reset)"><i class="fas fa-compress"></i></button>
+        <button class="btn btn-dark btn-sm rounded-circle shadow" style="width: 38px; height: 38px;" onclick="zoomApp(-0.1)" title="Zoom Out (Perkecil)"><i class="fas fa-search-minus"></i></button>
+    </div>
+
+    <script>
+        let currentZoomLevel = 1.0;
+        function zoomApp(step) {
+            if (step === 0) {
+                currentZoomLevel = 1.0;
+            } else {
+                currentZoomLevel += step;
+                if (currentZoomLevel < 0.5) currentZoomLevel = 0.5;
+                if (currentZoomLevel > 1.5) currentZoomLevel = 1.5;
+            }
+            document.body.style.zoom = currentZoomLevel;
+        }
+    </script>
+
     <div id="view-login">
         <!-- WRAPPER GLASSMORPHISM -->
         <div class="login-wrapper p-4">
@@ -2075,39 +2096,46 @@
                         <div class="row g-2">
                             <!-- Baris 1: Nama, Email, No HP (Masing-masing 1/3) -->
                             <div class="col-md-4">
-                                <label class="form-label fw-bold small mb-1">Nama Pengirim <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold small mb-1">Nama Pengirim <span
+                                        class="text-danger">*</span></label>
                                 <input type="text" class="form-control form-control-sm" id="extNama" required>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-bold small mb-1">Email Pengirim <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold small mb-1">Email Pengirim <span
+                                        class="text-danger">*</span></label>
                                 <input type="email" class="form-control form-control-sm" id="extEmail" required>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-bold small mb-1">No HP/WA <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold small mb-1">No HP/WA <span
+                                        class="text-danger">*</span></label>
                                 <input type="text" class="form-control form-control-sm" id="extNoHp" required>
                             </div>
-    
+
                             <div class="col-12 my-1">
                                 <hr class="my-1">
                             </div>
-    
+
                             <!-- Baris 2: Lembaga, No Surat, Tgl Surat (Masing-masing 1/3) -->
                             <div class="col-md-4">
-                                <label class="form-label fw-bold small mb-1">Lembaga Pengirim <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold small mb-1">Lembaga Pengirim <span
+                                        class="text-danger">*</span></label>
                                 <input type="text" class="form-control form-control-sm" id="extLembaga" required>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-bold small mb-1">Nomor Surat <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold small mb-1">Nomor Surat <span
+                                        class="text-danger">*</span></label>
                                 <input type="text" class="form-control form-control-sm" id="extNoSurat" required>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-bold small mb-1">Tanggal Surat <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold small mb-1">Tanggal Surat <span
+                                        class="text-danger">*</span></label>
                                 <input type="date" class="form-control form-control-sm" id="extTglSurat" required>
                             </div>
-    
+
                             <!-- Baris 3: Sifat Surat (1/3), Hal Surat (2/3) -->
                             <div class="col-md-4">
-                                <label class="form-label fw-bold small mb-1">Sifat Surat <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold small mb-1">Sifat Surat <span
+                                        class="text-danger">*</span></label>
                                 <select class="form-select form-select-sm" id="extSifatSurat" required>
                                     <option value="">-- Pilih Sifat --</option>
                                     <option value="Biasa">Biasa</option>
@@ -2117,24 +2145,28 @@
                                 </select>
                             </div>
                             <div class="col-md-8">
-                                <label class="form-label fw-bold small mb-1">Hal Surat <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold small mb-1">Hal Surat <span
+                                        class="text-danger">*</span></label>
                                 <input type="text" class="form-control form-control-sm" id="extHalSurat" required>
                             </div>
-    
+
                             <!-- Baris 4: Pejabat (1/3), Keterangan (2/3) -->
                             <div class="col-md-4">
-                                <label class="form-label fw-bold small mb-1">Pejabat dituju <span class="text-danger">*</span></label>
+                                <label class="form-label fw-bold small mb-1">Pejabat dituju <span
+                                        class="text-danger">*</span></label>
                                 <input type="text" class="form-control form-control-sm" id="extTujuanSurat" required>
                             </div>
                             <div class="col-md-8">
                                 <label class="form-label fw-bold small mb-1">Keterangan (Opsional)</label>
                                 <textarea class="form-control form-control-sm" id="extKeterangan" rows="1"></textarea>
                             </div>
-    
+
                             <!-- Baris 5: Upload -->
                             <div class="col-md-12 mt-2">
-                                <label class="form-label fw-bold small mb-1">Upload File Surat (PDF/Gambar) <span class="text-danger">*</span></label>
-                                <input type="file" class="form-control form-control-sm" id="extFile" accept=".pdf,image/*" required>
+                                <label class="form-label fw-bold small mb-1">Upload File Surat (PDF/Gambar) <span
+                                        class="text-danger">*</span></label>
+                                <input type="file" class="form-control form-control-sm" id="extFile"
+                                    accept=".pdf,image/*" required>
                             </div>
                         </div>
                     </div>
