@@ -15,6 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SiDiMAS">
 
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0d6efd">
     <link rel="apple-touch-icon" href="./icon.png">
 
@@ -29,7 +30,7 @@
     <link href="assets/css/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     <link href="assets/css/cropper.min.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 
 <body>
@@ -37,57 +38,85 @@
         onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fas fa-arrow-up"></i></button>
 
     <div id="view-login">
-        <div class="login-wrapper">
+        <!-- WRAPPER GLASSMORPHISM -->
+        <div class="login-wrapper p-4">
 
-            <div class="login-box login-box-left" id="boxLeft">
-                <div class="login-logos mb-3">
-                    <img id="logLogo1" class="login-logo" src="">
-                    <img id="logLogo2" class="login-logo" src="">
+            <!-- LANDING PAGE (Dulu Kotak Kiri) -->
+            <div class="login-box text-center" id="boxLeft">
+                <div class="login-logos mb-3 d-flex justify-content-center gap-3">
+                    <img id="logLogo1" class="login-logo anim-float-down" src="">
+                    <img id="logLogo2" class="login-logo anim-float-up" src="">
                 </div>
-                <div class="login-instansi" id="logInstansi">INSTANSI</div>
-                <div class="login-opd hide" id="logOpd">OPD</div>
-                <div class="login-sekolah" id="logSekolah">LOADING SYSTEM...</div>
-                <hr>
+                <div class="login-instansi" id="logInstansi"
+                    style="color: #fff; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">INSTANSI</div>
+                <div class="login-opd hide" id="logOpd" style="color: #fff; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
+                    OPD</div>
+                <div class="login-sekolah" id="logSekolah"
+                    style="color: #fff; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">LOADING SYSTEM...</div>
+                <hr style="border-color: rgba(255,255,255,0.5);">
                 <div class="mt-2">
                     <img src="assets/img/logo_sidimas.png" alt="Logo SiDiMAS" class="login-logo2 mb-2">
-                    <p class="text-muted small mb-0" style="font-weight: 600">Sistem Digital Manajemen Arsip Surat</p>
-                    <p class="text-muted small mb-0" style="font-weight: 500; color:rgb(231, 172, 9)">Hybrid</p>
+                    <p class="small mb-0"
+                        style="font-weight: 600; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Sistem Digital
+                        Manajemen Arsip Surat</p>
+                    <p class="small mb-0"
+                        style="font-weight: 500; color:#ffdd57; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Hybrid</p>
                 </div>
 
-                <button class="btn btn-primary btn-mobile-next w-100 py-3 fw-bold rounded-pill shadow-sm"
-                    onclick="toggleMobileLogin('show')">
-                    MASUK APLIKASI <i class="fas fa-arrow-right ms-2"></i>
-                </button>
+                <div class="mt-4 d-flex gap-1 justify-content-center">
+                    <button type="button"
+                        class="btn btn-warning text-dark py-2 fw-bold shadow-sm anim-float-left-back d-flex align-items-center"
+                        style="width: 58%; border-radius: 0; clip-path: polygon(0 50%, 15px 0, 100% 0, 100% 100%, 15px 100%); padding-left: 20px; padding-right: 5px; font-size: 0.8rem;"
+                        onclick="showModalKirimSurat()">
+                        <i class="fas fa-paper-plane"></i>
+                        <span class="flex-grow-1 text-center">Kirim Surat ke Kami</span>
+                    </button>
 
-                <div class="mt-auto pt-4" style="font-size: 0.75rem; color: #6c757d;">
-                    &copy; 2026 SiDiMAS | <a href="javascript:void(0)" onclick="modalPrivasi()"
-                        class="text-decoration-none">Kebijakan Privasi</a>
-                    <br><span style="font-size: 0.7rem;">Powered by: <a href='https://www.farypin-inovasiteknologi.com'
-                            target="_blank" style="color:blue">PT Farypin Inovasi Teknologi</a></span>
+                    <button type="button"
+                        class="btn btn-primary py-2 fw-bold shadow-sm anim-float-right-back d-flex align-items-center"
+                        style="width: 40%; border-radius: 0; clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 50%, calc(100% - 15px) 100%, 0 100%); padding-left: 5px; padding-right: 20px; font-size: 0.8rem;"
+                        onclick="toggleMobileLogin('show')">
+                        <span class="flex-grow-1 text-center">Masuk App</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
             </div>
 
-            <div class="login-box login-box-right" id="boxRight">
-                <div class="btn-mobile-back" onclick="toggleMobileLogin('hide')">
-                    <i class="fas fa-chevron-left"></i> Kembali
+            <!-- FORM LOGIN (Dulu Kotak Kanan) -->
+            <div class="login-box text-center pt-3 pb-4" id="boxRight" style="display: none;">
+                <div class="text-start mb-2" style="margin-top: -10px;">
+                    <button class="btn btn-sm btn-light rounded-pill px-3 shadow-sm"
+                        onclick="toggleMobileLogin('hide')">
+                        <i class="fas fa-chevron-left me-1"></i> Kembali
+                    </button>
                 </div>
 
-                <img src="assets/img/logo_sidimas.png" alt="Logo" class="mx-auto mb-3" style="height: 50px;">
-                <h5 class="fw-bold mb-4" style="color: var(--main-color);">Silakan Login</h5>
+                <img src="assets/img/logo_sidimas.png" alt="Logo" class="mx-auto mb-2"
+                    style="height: 45px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+
+                <p class="mb-4"
+                    style="color: rgba(255,255,255,0.9); font-size: 0.85rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                    Halaman login bagi Admin dan User Sekolah.
+                </p>
 
                 <form onsubmit="prosesLogin(event)" autocomplete="off">
-                    <div class="form-floating mb-3 text-start">
-                        <input id="u" class="form-control" placeholder="U" required>
-                        <label>Username</label>
+                    <div class="mb-3 text-start">
+                        <label class="form-label text-white small fw-bold mb-1"
+                            style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Username</label>
+                        <input id="u" class="form-control form-control-lg" placeholder="Masukkan Username" required
+                            style="background: rgba(255,255,255,0.9); border: none; font-size: 0.95rem;">
                     </div>
-                    <div class="input-group mb-4">
-                        <div class="form-floating flex-grow-1 text-start">
-                            <input id="p" type="password" class="form-control" placeholder="P" required>
-                            <label>Password</label>
+                    <div class="mb-4 text-start">
+                        <label class="form-label text-white small fw-bold mb-1"
+                            style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Password</label>
+                        <div class="input-group input-group-lg">
+                            <input id="p" type="password" class="form-control" placeholder="Masukkan Password" required
+                                style="background: rgba(255,255,255,0.9); border: none; border-right: 0; font-size: 0.95rem;">
+                            <button class="btn" type="button" onclick="togglePass()"
+                                style="background: rgba(255,255,255,0.9); border: none; border-radius: 0 0.375rem 0.375rem 0;">
+                                <i class="fas fa-eye" id="iconPass"></i>
+                            </button>
                         </div>
-                        <button class="btn btn-outline-secondary" type="button" onclick="togglePass()">
-                            <i class="fas fa-eye" id="iconPass"></i>
-                        </button>
                     </div>
                     <button id="btnLogin"
                         class="btn btn-primary w-100 py-3 fw-bold text-uppercase rounded-pill shadow-sm">
@@ -96,49 +125,70 @@
                     </button>
                 </form>
 
-                <!-- Bagian tombol unduh disembunyikan sesuai permintaan -->
-                <div class="mt-4 pt-3 border-top hide">
-                    <p class="text-muted small mb-2 fw-bold">Unduh Aplikasi:</p>
-                    <div class="d-flex justify-content-center gap-2">
-                        <a href="#" id="btnUnduhExec" target="_blank"
-                            class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold shadow-sm">
-                            <i class="fas fa-download me-1"></i> Executable
-                        </a>
-                    </div>
+                <!-- 3 TOMBOL KECIL DI BAWAH LOGIN (HANYA DI HALAMAN LOGIN) -->
+                <div class="mt-4 pt-3 border-top d-flex justify-content-between flex-nowrap gap-1"
+                    style="border-color: rgba(255,255,255,0.3) !important; width: 100%;">
+                    <button
+                        class="btn btn-outline-light rounded-pill px-1 shadow-sm d-flex align-items-center justify-content-center text-truncate"
+                        onclick="modalPrivasi()"
+                        style="font-size: 0.65rem; border-color: rgba(255,255,255,0.5); flex: 1;">
+                        <i class="fas fa-shield-alt me-1"></i> Privasi
+                    </button>
+                    <button
+                        class="btn btn-outline-light rounded-pill px-1 shadow-sm d-flex align-items-center justify-content-center text-truncate"
+                        onclick="modalHelpdesk()"
+                        style="font-size: 0.65rem; border-color: rgba(255,255,255,0.5); flex: 1;">
+                        <i class="fas fa-headset me-1"></i> Helpdesk
+                    </button>
+                    <button
+                        class="btn btn-outline-light rounded-pill px-1 shadow-sm d-flex align-items-center justify-content-center text-truncate"
+                        onclick="modalInstal()"
+                        style="font-size: 0.65rem; border-color: rgba(255,255,255,0.5); flex: 1;">
+                        <i class="fas fa-download me-1"></i> Instal
+                    </button>
                 </div>
             </div>
-
         </div>
+
+        <div class="mt-3 text-center"
+            style="font-size: 0.7rem; color: rgba(255,255,255,0.7); text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+            &copy; 2026 SIDIMAS (v2.0.0) | Hak cipta dilindungi.<br>
+            Powered by : <a href='https://www.farypin-inovasiteknologi.com' target="_blank"
+                class="text-warning text-decoration-none fw-bold">PT Farypin Inovasi Teknologi</a>
+        </div>
+
     </div>
 
     <div id="view-dashboard" class="hide">
         <div class="d-md-none bg-primary text-white p-3 d-flex align-items-center justify-content-between shadow-sm sticky-top"
             style="z-index: 1040;">
             <div class="fw-bold fs-5">SiDiMAS</div>
-            <div class="admin-only d-flex gap-3">
-                <a onclick="nav('users', this)" class="text-white" title="Manajemen User"><i
+            <div class="d-flex gap-3 align-items-center">
+                <a onclick="nav('users', this)" class="text-white admin-only" title="Manajemen User"><i
                         class="fas fa-users-cog fa-lg"></i></a>
-                <a onclick="nav('setting', this)" class="text-white" title="Pengaturan"><i
+                <a onclick="nav('setting', this)" class="text-white admin-only" title="Pengaturan"><i
                         class="fas fa-tools fa-lg"></i></a>
+                <a onclick="doLogout()" class="text-white" title="Keluar"><i class="fas fa-sign-out-alt fa-lg"></i></a>
             </div>
         </div>
 
         <nav class="sidebar">
             <div class="text-center mb-4">
+                <img src="assets/img/logo_sidimas.png" alt="Logo SiDiMAS" class="img-fluid mb-2"
+                    style="max-height: 50px;">
                 <h4 class="fw-bold">SiDiMAS</h4>
                 <div class="badge bg-warning text-dark rounded-pill px-3" id="lblRole">Role</div>
             </div>
             <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link active" onclick="nav('home', this)"><i
                             class="fas fa-chart-pie"></i>Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link text-white bg-success bg-opacity-25"
-                        onclick="nav('buat', this)"><i class="fas fa-file-word"></i>Buat Surat</a></li>
-                <li class="nav-item"><a class="nav-link" onclick="nav('masuk', this)"><i class="fas fa-inbox"></i>Surat
-                        Masuk</a></li>
-                <li class="nav-item"><a class="nav-link" onclick="nav('keluar', this)"><i
-                            class="fas fa-paper-plane"></i>Surat Keluar</a></li>
-                <li class="nav-item admin-only"><a class="nav-link" onclick="nav('users', this)"><i
-                            class="fas fa-users"></i>Manajemen User</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="nav('buat', this)"><i
+                            class="fas fa-file-word"></i>Buat Surat</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="nav('inbox', this)"><i class="fas fa-inbox"></i>Surat
+                        Masuk <span id="badgeInboxSidebar" class="badge bg-danger rounded-circle text-white ms-2"
+                            style="display: none;">0</span></a></li>
+                <li class="nav-item"><a class="nav-link" onclick="nav('agenda', this)"><i
+                            class="fas fa-folder-open"></i>Agenda Surat</a></li>
                 <li class="nav-item admin-only"><a class="nav-link" onclick="nav('setting', this)"><i
                             class="fas fa-cogs"></i>Settings</a></li>
                 <li class="nav-item mt-5"><a class="nav-link text-white" onclick="doLogout()"><i
@@ -161,9 +211,11 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="alert alert-light border shadow-sm w-100 mb-0">Selamat Datang, <b id="lblNama"
                             class="text-primary fs-5">User</b>.</div>
-                    <button class="btn btn-primary ms-2 shadow-sm fw-bold rounded-pill px-3 d-flex align-items-center admin-only"
+                    <button
+                        class="btn btn-primary ms-2 shadow-sm fw-bold rounded-pill px-3 d-flex align-items-center admin-only"
                         onclick="openSyncModal()" title="Sinkronisasi ke Cloud" id="btnSyncMain">
                         <i class="fas fa-cloud-upload-alt me-2"></i> Sinkronisasi
+                        <span id="badgeKoneksi" class="badge bg-secondary ms-2" style="font-size: 0.7em;">Cek...</span>
                     </button>
                     <button class="btn btn-primary btn-refresh ms-2 shadow-sm" onclick="nav('home')"
                         title="Refresh Data"><i class="fas fa-sync-alt"></i></button>
@@ -172,13 +224,17 @@
                     <div class="col-md-8 mb-3">
                         <div class="card p-3 shadow-sm h-100">
                             <h6 class="text-secondary fw-bold">Statistik Bulanan</h6>
-                            <div id="chartBulanan" style="height: 300px;"></div>
+                            <div style="position: relative; height: 300px; width: 100%;">
+                                <canvas id="chartBulanan"></canvas>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="card p-3 shadow-sm h-100">
                             <h6 class="text-secondary fw-bold">Jenis Surat Keluar</h6>
-                            <div id="chartJenis" style="height: 300px;"></div>
+                            <div style="position: relative; height: 300px; width: 100%;">
+                                <canvas id="chartJenis"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -223,403 +279,700 @@
                                     class="form-select fw-bold form-select-lg" onchange="gantiFormSurat()"></select>
                             </div>
                             <h6 class="text-secondary border-bottom pb-2 mt-4">1. Kepala Surat</h6>
-                            <div class="row mb-3">
-                                <div class="col-md-5"><label>Kode Klasifikasi (Berdasarkan Permendagri No. 83 Tahun
-                                        2022)</label>
-                                    <select class="form-select" id="selKodeArsip" onchange="updatePreview()"></select>
+                            <div class="p-3 mb-4"
+                                style="background-color: #f3e8ff; border: 1px solid #d8b4fe; border-radius: 8px;">
+                                <div class="row mb-3 bg-light p-2 rounded mx-0">
+                                    <div class="col-md-12">
+                                        <label class="fw-bold mb-1 text-primary">Susunan Variabel Nomor Surat</label>
+                                        <div class="d-flex gap-3">
+                                            <div class="form-check format-radio-box">
+                                                <input class="form-check-input" type="radio" name="formatNomor"
+                                                    id="format1" value="format1" checked onchange="updatePreview()">
+                                                <label class="form-check-label" for="format1">
+                                                    Kode Klasifikasi / No Urut / Kode Lembaga / Bulan / Tahun
+                                                </label>
+                                            </div>
+                                            <div class="form-check format-radio-box">
+                                                <input class="form-check-input" type="radio" name="formatNomor"
+                                                    id="format2" value="format2" onchange="updatePreview()">
+                                                <label class="form-check-label" for="format2">
+                                                    No Urut / Kode Klasifikasi / Kode Lembaga / Bulan / Tahun
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-md-3"><label>No. Urut Otomatis (bisa diedit)</label><input
-                                        class="form-control" id="inpNoUrut" placeholder="001" onkeyup="updatePreview()">
+                                <div class="row mb-3 align-items-end">
+                                    <div class="col-md-5">
+                                        <label id="labelKodeKlasifikasi">Kode Klasifikasi</label>
+                                        <div class="d-flex gap-3 mb-2 mt-1">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="sumberKode"
+                                                    id="sumberPermendagri" value="permendagri" checked
+                                                    onchange="loadKodeKlasifikasi()">
+                                                <label class="form-check-label small text-muted"
+                                                    for="sumberPermendagri">Permendagri</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="sumberKode"
+                                                    id="sumberDaerah" value="daerah" onchange="loadKodeKlasifikasi()">
+                                                <label class="form-check-label small text-muted"
+                                                    for="sumberDaerah">Aturan
+                                                    Daerah (Custom)</label>
+                                            </div>
+                                        </div>
+                                        <select class="form-select" id="selKodeArsip"
+                                            onchange="updatePreview()"></select>
+                                    </div>
+                                    <div class="col-md-3"><label>No. Urut Otomatis (bisa diedit)</label><input
+                                            class="form-control" id="inpNoUrut" placeholder="001"
+                                            onkeyup="updatePreview()">
+                                    </div>
+                                    <div class="col-md-4"><label>Kode Nama Lembaga (auto)</label><input
+                                            class="form-control" id="inpKodeSekolah" placeholder="loading..."
+                                            onkeyup="updatePreview()" readonly style="background-color: #e9ecef;"></div>
                                 </div>
-                                <div class="col-md-4"><label>Kode Lembaga</label><input class="form-control"
-                                        id="inpKodeSekolah" placeholder="loading..." onkeyup="updatePreview()" readonly
-                                        style="background-color: #e9ecef;"></div>
-                            </div>
-                            <div class="preview-box" id="previewNomor">autoload...</div><input type="hidden"
-                                name="nomorFull" id="nomorFull">
-                            <div class="row mb-3">
-                                <div class="col-md-6"><label>Tanggal Surat</label><input type="date"
-                                        class="form-control" id="inpTglSurat" onchange="updateTanggalSurat()"
-                                        required><input type="hidden" name="tanggalSuratFull" id="tanggalSuratFull">
+                                <div class="preview-box" id="previewNomor">autoload...</div><input type="hidden"
+                                    name="nomorFull" id="nomorFull">
+                                <div class="row mb-3 d-none">
+                                    <div class="col-md-6"><label>Tanggal Surat</label><input type="date"
+                                            class="form-control" id="inpTglSurat" onchange="updateTanggalSurat()"><input
+                                            type="hidden" name="tanggalSuratFull" id="tanggalSuratFull">
+                                    </div>
                                 </div>
                             </div>
 
                             <h6 class="text-secondary border-bottom pb-2 mt-4">2. Isi Surat</h6>
-                            <div id="box-umum" class="form-box">
-                                <div class="row mb-2">
-                                    <div class="col-md-6"><label>Perihal</label><input name="perihal"
-                                            class="form-control" placeholder="Usulan....."></div>
-                                    <div class="col-md-2"><label>Sifat Surat</label><select name="sifatSurat"
-                                            class="form-select">
-                                            <option>Biasa</option>
-                                            <option>Penting</option>
-                                            <option>Rahasia</option>
-                                        </select></div>
-                                    <div class="col-md-2"><label>Lampiran</label><input name="lampiranSurat"
-                                            class="form-control" placeholder="-"></div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-md-10"><label>Kepada (Yth.)</label><input name="tujuanNama"
-                                            class="form-control" placeholder="Kepala Dinas..."></div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-md-6"><label>Up/Cq (kosongkan jika tidak menggunakan)</label><input
-                                            name="tujuanBidang" class="form-control" placeholder="Up. Kabid..."></div>
-                                    <div class="col-md-4"><label>Tempat Tujuan</label><input name="tujuanTempat"
-                                            class="form-control" placeholder="Jambi"></div>
-                                </div>
-                                <div class="mb-2"><label>Isi Paragraf Utama</label><textarea name="isiUmum"
-                                        class="form-control" rows="4"></textarea></div>
-                                <div class="mb-2"><label>Penutup</label><textarea name="isiPenutup" class="form-control"
-                                        rows="2">Demikianlah Usulan/Permohonan/Pengajuan ini disampaikan...</textarea>
-                                </div>
-                            </div>
-
-                            <div id="box-undangan" class="form-box hide">
-                                <div class="row mb-2">
-                                    <div class="col-md-6"><label>Perihal</label><input name="perihal"
-                                            class="form-control" placeholder="Undangan...../Pemanggilan orang tua..">
-                                    </div>
-                                    <div class="col-md-2"><label>Sifat</label><select name="sifatSurat"
-                                            class="form-select">
-                                            <option>Biasa</option>
-                                            <option>Penting</option>
-                                        </select></div>
-                                    <div class="col-md-2"><label>Lampiran</label><input name="lampiranSurat"
-                                            class="form-control" placeholder="-"></div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-md-10"><label>Kepada (Yth.)</label><input name="tujuanJabatan"
-                                            class="form-control" placeholder="Kepala Desa..."></div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-md-6"><label>Nama Tujuan</label><input name="tujuanNama"
-                                            class="form-control" placeholder="Bpk. Ahmad..."></div>
-                                    <div class="col-md-4"><label>Tempat</label><input name="tujuanTempat"
-                                            class="form-control"></div>
-                                </div>
-                                <div class="mb-2"><label>Isi Surat</label><textarea name="isiUmum" class="form-control"
-                                        rows="4"></textarea></div>
-                                <div class="bg-light p-3 mb-2 rounded border">
-                                    <label class="fw-bold text-muted small mb-2">DETAIL KEGIATAN/ACARA:</label>
-                                    <div class="row g-2">
-                                        <div class="col-md-6"><label>Nama Kegiatan</label><input name="acaraDetail"
-                                                class="form-control"></div>
-                                        <div class="col-md-6"><label>Tempat</label><input name="tempatAcara"
-                                                class="form-control"></div>
-                                        <div class="col-md-4"><label>Waktu</label><input name="waktuAcara"
-                                                class="form-control"></div>
-                                        <div class="col-md-4"><label>Tgl. Kegiatan</label><input type="date"
-                                                id="inpTglAcara" class="form-control"
-                                                onchange="updateHariAcara()"><input type="hidden" name="tglAcaraIndo"
-                                                id="valTglAcaraIndo"><input type="hidden" name="hariAcara"
-                                                id="valHariAcara"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="box-sk" class="form-box hide">
-                                <div class="mb-2"><label>TENTANG</label><input name="perihal" class="form-control"
-                                        placeholder="PEMBAGIAN TUGAS GURU.............."></div>
-                                <div class="mb-2"><label>Menimbang</label><textarea name="skMenimbang"
-                                        class="form-control" rows="3">a. Bahwa...  b. Bahwa...... dst</textarea></div>
-                                <div class="mb-2"><label>Mengingat</label><textarea name="skMengingat"
-                                        class="form-control"
-                                        rows="3">1. UU nomor... 2. Permendagri nomor...dst</textarea></div>
-                                <div class="mb-2"><label>Menetapkan</label><textarea name="skMenetapkan"
-                                        class="form-control"
-                                        rows="5">Kesatu:..... Kedua:............ Ketiga:...........</textarea></div>
-                            </div>
-                            <div id="box-sppd" class="form-box hide">
-                                <div class="mb-2"><label>Maksud Perjalanan Dinas</label><input name="perihal"
-                                        class="form-control" placeholder="Mengikuti kegiatan bimtek administrasi...">
-                                </div>
-                                <div class="card p-3 bg-light mb-2"><b class="text-primary">Pegawai:</b>
-                                    <div class="row g-2 mt-1">
-                                        <div class="col-6"><input name="tujuanNama" class="form-control"
-                                                placeholder="Nama"></div>
-                                        <div class="col-6"><input name="tujuanNip" class="form-control"
-                                                placeholder="NIP"></div>
-                                        <div class="col-6"><input name="tujuanPangkat" class="form-control"
-                                                placeholder="Pangkat"></div>
-                                        <div class="col-6"><input name="tujuanJabatan" class="form-control"
-                                                placeholder="Jabatan"></div>
-                                    </div>
-                                </div>
-                                <div class="card p-3 bg-light mb-2"><b class="text-success">Perjalanan:</b>
-                                    <div class="row g-2 mt-1">
-                                        <div class="col-6"><label>Alat Angkutan</label><input name="sppdAngkutan"
-                                                class="form-control"></div>
-                                        <div class="col-6"><label>Tempat/Kota Tujuan</label><input name="sppdTujuan"
-                                                class="form-control"></div>
-                                        <div class="col-4"><label>Tgl Berangkat</label><input type="date"
-                                                name="sppdTglMulai" class="form-control"></div>
-                                        <div class="col-4"><label>Tgl Kembali</label><input type="date"
-                                                name="sppdTglSelesai" class="form-control"></div>
-                                        <div class="col-4"><label>Lama (Hari)</label><input name="sppdLama"
-                                                class="form-control" type="number"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="box-spt" class="form-box hide">
-                                <div class="mb-2"><label>Dasar Hukum</label><textarea name="dasarHukum"
-                                        class="form-control" rows="2"></textarea></div>
-                                <div class="card p-3 bg-light mb-2"><b class="text-primary">Kepada:</b>
-                                    <div class="row g-2 mt-1">
-                                        <div class="col-6"><input name="tujuanNama" class="form-control"
-                                                placeholder="Nama"></div>
-                                        <div class="col-6"><input name="tujuanNip" class="form-control"
-                                                placeholder="NIP"></div>
-                                        <div class="col-6"><input name="tujuanPangkat" class="form-control"
-                                                placeholder="Pangkat"></div>
-                                        <div class="col-6"><input name="tujuanJabatan" class="form-control"
-                                                placeholder="Jabatan"></div>
-                                    </div>
-                                </div>
-                                <div class="mb-2"><label>Untuk</label><textarea name="isiUmum" class="form-control"
-                                        rows="3"></textarea></div>
-                                <div class="bg-warning bg-opacity-10 p-3 border rounded"><label
-                                        class="fw-bold small">Waktu:</label>
-                                    <div class="row g-2">
-                                        <div class="col-6"><label>Mulai</label><input type="date" name="sptMulai"
-                                                class="form-control"></div>
-                                        <div class="col-6"><label>Selesai</label><input type="date" name="sptSelesai"
-                                                class="form-control"></div>
-                                        <div class="col-6"><label>Waktu</label><input name="sptWaktu"
-                                                class="form-control"></div>
-                                        <div class="col-6"><label>Tempat</label><input name="sptTempat"
-                                                class="form-control"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="box-suket" class="form-box hide">
-                                <div class="card p-3 bg-light mb-2"><b class="text-primary">Menerangkan:</b>
-                                    <div class="row g-2 mt-1">
-                                        <div class="col-6"><input name="tujuanNama" class="form-control"
-                                                placeholder="Nama"></div>
-                                        <div class="col-6"><input name="tujuanNip" class="form-control"
-                                                placeholder="NIP"></div>
-                                        <div class="col-6"><input name="tujuanPangkat" class="form-control"
-                                                placeholder="Pangkat"></div>
-                                        <div class="col-6"><input name="tujuanJabatan" class="form-control"
-                                                placeholder="Jabatan"></div>
-                                    </div>
-                                </div>
-                                <div class="mb-2"><label>Isi Keterangan</label><textarea name="suketIsi"
-                                        class="form-control" rows="4">Adalah benar bahwa.......</textarea></div>
-                            </div>
-                            <div id="box-nota" class="form-box hide">
-                                <div class="mb-2"><label>Kepada Yth.</label><input name="tujuanNama"
-                                        class="form-control"></div>
-                                <div class="row mb-2">
-                                    <div class="col-md-9"><label>Hal</label><input name="perihal" class="form-control">
-                                    </div>
-                                    <div class="col-md-3"><label>Sifat</label><select name="sifatSurat"
-                                            class="form-select">
-                                            <option>Biasa</option>
-                                            <option>Penting</option>
-                                            <option>Rahasia</option>
-                                        </select></div>
-                                </div>
-                                <div class="mb-2"><label>Isi Nota</label><textarea name="isiUmum" class="form-control"
-                                        rows="4"></textarea></div>
-                            </div>
-                            <div id="box-sis" class="form-box hide">
-                                <div class="alert alert-info py-2 small">Data Kepala Sekolah diambil otomatis.</div>
-                                <div class="card p-3 bg-light mb-2"><b class="text-primary">Data Siswa:</b>
-                                    <div class="row g-2 mt-1">
-                                        <div class="col-6"><label>Nama Siswa</label><input name="siswaNama"
-                                                class="form-control"></div>
-                                        <div class="col-6"><label>NIS / NISN</label><input name="siswaNis"
-                                                class="form-control"></div>
-                                        <div class="col-6"><label>TTL</label><input name="siswaTtl"
-                                                class="form-control"></div>
-                                        <div class="col-6"><label>JK</label><select name="siswaJk" class="form-select">
-                                                <option>Laki-laki</option>
-                                                <option>Perempuan</option>
+                            <div class="p-3 mb-4"
+                                style="background-color: #fef9c3; border: 1px solid #fde047; border-radius: 8px;">
+                                <div id="box-umum" class="form-box">
+                                    <div class="row mb-2">
+                                        <div class="col-md-6"><label>Perihal</label><input name="perihal"
+                                                class="form-control" placeholder="Usulan....."></div>
+                                        <div class="col-md-2"><label>Sifat Surat</label><select name="sifatSurat"
+                                                class="form-select">
+                                                <option>Biasa</option>
+                                                <option>Penting</option>
+                                                <option>Rahasia</option>
                                             </select></div>
-                                        <div class="col-6"><label>Kelas</label><input name="siswaKelas"
-                                                class="form-control"></div>
-                                        <div class="col-6"><label>Ortu</label><input name="siswaOrtu"
-                                                class="form-control"></div>
+                                        <div class="col-md-2"><label>Lampiran</label><input name="lampiranSurat"
+                                                class="form-control" placeholder="-"></div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-10"><label>Kepada (Yth.)</label><input name="tujuanNama"
+                                                class="form-control" placeholder="Kepala Dinas..."></div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-6"><label>Up/Cq (kosongkan jika tidak
+                                                menggunakan)</label><input name="tujuanBidang" class="form-control"
+                                                placeholder="Up. Kabid..."></div>
+                                        <div class="col-md-4"><label>Tempat Tujuan</label><input name="tujuanTempat"
+                                                class="form-control" placeholder="Jambi"></div>
+                                    </div>
+                                    <div class="mb-2"><label>Isi Paragraf Utama</label><textarea name="isiUmum"
+                                            class="form-control" rows="4"></textarea></div>
+                                    <div class="mb-2"><label>Penutup</label><textarea name="isiPenutup"
+                                            class="form-control"
+                                            rows="2">Demikianlah Usulan/Permohonan/Pengajuan ini disampaikan...</textarea>
                                     </div>
                                 </div>
-                                <div class="mb-2"><label>Uraian Keterangan</label><textarea name="siswaKet"
-                                        class="form-control" rows="3">Adalah benar peserta didik...</textarea></div>
-                            </div>
-                            <div id="box-pengantar" class="form-box hide">
-                                <div class="row mb-2">
-                                    <div class="col-md-10"><label>Kepada (Yth.)</label><input name="tujuanNama"
-                                            class="form-control" placeholder="Kepala Dinas..."></div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-md-6"><label>Up/Cq (kosongkan jika tidak menggunakan)</label><input
-                                            name="tujuanBidang" class="form-control" placeholder="Up. Kabid..."></div>
-                                    <div class="col-md-4"><label>Tempat</label><input name="tujuanTempat"
-                                            class="form-control"></div>
-                                </div>
-                                <div class="card p-3 bg-light border-0"><b class="text-success mb-2 d-block">Isi Tabel
-                                        Pengantar:</b>
-                                    <div class="mb-2"><label>Isi Surat/Barang yg dikirimkan</label><textarea
-                                            name="pengantarIsi" class="form-control" rows="3"></textarea></div>
-                                    <div class="row">
-                                        <div class="col-6"><label>Banyaknya</label><input name="pengantarJml"
+
+                                <div id="box-undangan" class="form-box hide">
+                                    <div class="row mb-2">
+                                        <div class="col-md-6"><label>Perihal</label><input name="perihal"
+                                                class="form-control"
+                                                placeholder="Undangan...../Pemanggilan orang tua..">
+                                        </div>
+                                        <div class="col-md-2"><label>Sifat</label><select name="sifatSurat"
+                                                class="form-select">
+                                                <option>Biasa</option>
+                                                <option>Penting</option>
+                                            </select></div>
+                                        <div class="col-md-2"><label>Lampiran</label><input name="lampiranSurat"
+                                                class="form-control" placeholder="-"></div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-10"><label>Kepada (Yth.)</label><input name="tujuanJabatan"
+                                                class="form-control" placeholder="Kepala Desa..."></div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-6"><label>Nama Tujuan</label><input name="tujuanNama"
+                                                class="form-control" placeholder="Bpk. Ahmad..."></div>
+                                        <div class="col-md-4"><label>Tempat</label><input name="tujuanTempat"
                                                 class="form-control"></div>
-                                        <div class="col-9"><label>Keterangan</label><textarea name="pengantarKet"
-                                                class="form-control">Disampaikan dengan hormat untuk ditindak lanjuti...</textarea>
+                                    </div>
+                                    <div class="mb-2"><label>Isi Surat</label><textarea name="isiUmum"
+                                            class="form-control" rows="4"></textarea></div>
+                                    <div class="bg-light p-3 mb-2 rounded border">
+                                        <label class="fw-bold text-muted small mb-2">DETAIL KEGIATAN/ACARA:</label>
+                                        <div class="row g-2">
+                                            <div class="col-md-6"><label>Nama Kegiatan</label><input name="acaraDetail"
+                                                    class="form-control"></div>
+                                            <div class="col-md-6"><label>Tempat</label><input name="tempatAcara"
+                                                    class="form-control"></div>
+                                            <div class="col-md-4"><label>Waktu</label><input name="waktuAcara"
+                                                    class="form-control" placeholder="09.00 WIB s.d. Selesai"></div>
+                                            <div class="col-md-4"><label>Tgl. Kegiatan</label><input type="date"
+                                                    id="inpTglAcara" class="form-control"
+                                                    onchange="updateHariAcara()"><input type="hidden"
+                                                    name="tglAcaraIndo" id="valTglAcaraIndo"><input type="hidden"
+                                                    name="hariAcara" id="valHariAcara"></div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div id="box-izin" class="form-box hide">
-                                <div class="mb-2"><label>TENTANG</label><input name="perihal" class="form-control"
-                                        placeholder="IZIN.........."></div>
-                                <div class="mb-2"><label>Dasar</label><textarea name="dasarHukum" class="form-control"
-                                        rows="2"></textarea></div>
-                                <div class="card p-3 bg-light mb-2"><b class="text-primary">Memberikan Izin Kepada:</b>
-                                    <div class="row g-2 mt-1">
-                                        <div class="col-6"><input name="tujuanNama" class="form-control"
-                                                placeholder="Nama"></div>
-                                        <div class="col-6"><input name="tujuanNip" class="form-control"
-                                                placeholder="NIP"></div>
-                                        <div class="col-6"><input name="tujuanJabatan" class="form-control"
-                                                placeholder="Jabatan"></div>
-                                        <div class="col-6"><input name="tujuanAlamat" class="form-control"
-                                                placeholder="Alamat"></div>
+                                <div id="box-sk" class="form-box hide">
+                                    <div class="mb-2"><label>TENTANG</label><input name="perihal" class="form-control"
+                                            placeholder="PEMBAGIAN TUGAS GURU.............."></div>
+                                    <div class="mb-2"><label>Menimbang</label><textarea name="skMenimbang"
+                                            class="form-control"
+                                            rows="3">a. Bahwa.....&#10;b. Bahwa.....&#10;dst</textarea>
+                                    </div>
+                                    <div class="mb-2"><label>Mengingat</label><textarea name="skMengingat"
+                                            class="form-control"
+                                            rows="3">1. UU nomor...&#10;2. Permendagri nomor...&#10;dst</textarea></div>
+                                    <div class="mb-2"><label>Menetapkan</label><textarea name="skMenetapkan"
+                                            class="form-control"
+                                            rows="5">Kesatu:.....&#10;Kedua:............&#10;Ketiga:...........</textarea>
                                     </div>
                                 </div>
-                                <div class="mb-2"><label>Untuk</label><textarea name="izinAlasan" class="form-control"
-                                        rows="2"></textarea></div>
-                                <div class="row">
-                                    <div class="col-4"><label>Lama</label><input name="sppdLama" class="form-control"
-                                            type="number"></div>
-                                    <div class="col-4"><label>Mulai</label><input type="date" name="sppdTglMulai"
-                                            class="form-control"></div>
-                                    <div class="col-4"><label>s.d</label><input type="date" name="sppdTglSelesai"
-                                            class="form-control"></div>
-                                </div>
-                            </div>
-                            <div id="box-spmt" class="form-box hide">
-                                <div class="alert alert-info small py-1">Data Kepala Sekolah diambil otomatis.</div>
-                                <div class="card p-3 bg-light mb-2"><b class="text-primary">Data Pegawai:</b>
-                                    <div class="row g-2 mt-1">
-                                        <div class="col-6"><input name="tujuanNama" class="form-control"
-                                                placeholder="Nama"></div>
-                                        <div class="col-6"><input name="tujuanNip" class="form-control"
-                                                placeholder="NIP"></div>
-                                        <div class="col-6"><input name="tujuanPangkat" class="form-control"
-                                                placeholder="Pangkat/Golongan"></div>
-                                        <div class="col-6"><input name="tujuanJabatan" class="form-control"
-                                                placeholder="Jabatan"></div>
+                                <div id="box-sppd" class="form-box hide">
+                                    <div class="mb-2"><label>Maksud Perjalanan Dinas</label><input name="perihal"
+                                            class="form-control"
+                                            placeholder="Mengikuti kegiatan bimtek administrasi...">
+                                    </div>
+                                    <div class="card p-3 bg-light mb-2"><b class="text-primary">Pegawai:</b>
+                                        <div class="row g-2 mt-1">
+                                            <div class="col-6"><input name="tujuanNama" class="form-control"
+                                                    placeholder="Nama"></div>
+                                            <div class="col-6"><input name="tujuanNip" class="form-control"
+                                                    placeholder="NIP"></div>
+                                            <div class="col-6"><input name="tujuanPangkat" class="form-control"
+                                                    placeholder="Pangkat"></div>
+                                            <div class="col-6"><input name="tujuanJabatan" class="form-control"
+                                                    placeholder="Jabatan"></div>
+                                        </div>
+                                    </div>
+                                    <div class="card p-3 bg-light mb-2"><b class="text-success">Perjalanan:</b>
+                                        <div class="row g-2 mt-1">
+                                            <div class="col-6"><label>Alat Angkutan</label><input name="sppdAngkutan"
+                                                    class="form-control"></div>
+                                            <div class="col-6"><label>Tempat/Kota Tujuan</label><input name="sppdTujuan"
+                                                    class="form-control"></div>
+                                            <div class="col-4"><label>Tgl Berangkat</label><input type="date"
+                                                    name="sppdTglMulai" class="form-control"></div>
+                                            <div class="col-4"><label>Tgl Kembali</label><input type="date"
+                                                    name="sppdTglSelesai" class="form-control"></div>
+                                            <div class="col-4"><label>Lama (Hari)</label><input name="sppdLama"
+                                                    class="form-control" type="number"></div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="mb-2"><label>Berdasarkan Peraturan</label><textarea name="dasarHukum"
-                                        class="form-control" rows="2" placeholder="SK Nomor..."></textarea></div>
-                                <div class="mb-2"><label>Melaksanakan Tugas Sebagai</label><textarea
-                                        name="spmtJabatanBaru" class="form-control" rows="2"></textarea></div>
-                                <div class="row mb-2">
-                                    <div class="col-6"><label>TMT (Tanggal Mulai)</label><input type="date"
-                                            name="spmtTglMulai" class="form-control"></div>
-                                    <div class="col-6"><label>Sampai Tanggal</label><input type="date"
-                                            name="spmtTglSelesai" class="form-control"></div>
-                                </div>
-                            </div>
-                            <div id="box-lampiran" class="form-box hide">
-                                <div class="form-check form-switch mb-3 p-3 bg-warning bg-opacity-10 border rounded">
-                                    <input class="form-check-input ms-0 me-2" type="checkbox" name="tanpaKop"
-                                        id="inTanpaKop" value="ya">
-                                    <label class="form-check-label fw-bold text-danger" for="inTanpaKop">Sembunyikan Kop
-                                        Surat (Cetak Tanpa Kop)</label>
-                                </div>
-
-                                <div class="row mb-2">
-                                    <div class="col-md-12">
-                                        <label class="fw-bold text-primary">Orientasi Halaman</label>
-                                        <select name="orientasiHalaman" class="form-select border-primary">
-                                            <option value="portrait">Portrait (Berdiri)</option>
-                                            <option value="landscape" selected>Landscape (Mendatar)</option>
-                                        </select>
+                                <div id="box-spt" class="form-box hide">
+                                    <div class="mb-3 p-3 bg-light rounded border">
+                                        <label class="fw-bold text-primary mb-2 d-block">Mode Pengisian Pegawai:</label>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="modeSpt" id="modeSpt1"
+                                                value="sendirian" checked onchange="toggleModeSpt()">
+                                            <label class="form-check-label" for="modeSpt1">1 Pegawai (Sendirian)</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="modeSpt" id="modeSpt2"
+                                                value="kolektif" onchange="toggleModeSpt()">
+                                            <label class="form-check-label" for="modeSpt2">Banyak Pegawai
+                                                (Kolektif)</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="modeSpt" id="modeSpt3"
+                                                value="lampiran" onchange="toggleModeSpt()">
+                                            <label class="form-check-label" for="modeSpt3">Lampiran Terpisah</label>
+                                        </div>
                                     </div>
-                                </div>
-
-                                <div class="row mb-2">
-                                    <div class="col-md-6"><label>Tentang / Perihal Lampiran</label><input name="perihal"
-                                            class="form-control" placeholder="SURAT TUGAS KEPALA SMKN ......."></div>
-                                    <div class="col-md-6"><label>Judul Tabel</label><input name="judulTabel"
-                                            class="form-control" placeholder="DAFTAR NAMA PESERTA KEGIATAN..."></div>
-                                </div>
-
-                                <div class="card p-3 bg-light border-0">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <b class="text-primary d-block">Isi Data Tabel:</b>
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-sm btn-outline-primary"
-                                                onclick="addColLampiran()"><i class="fas fa-columns"></i> +
-                                                Kolom</button>
+                                    <div class="mb-2"><label>Dasar Hukum</label><textarea name="dasarHukum"
+                                            class="form-control" rows="2"
+                                            placeholder="Surat Undangan Bimtek nomor... / Surat Tugas Dinas Pdd Nomor..."></textarea>
+                                    </div>
+                                    <div id="sptAreaSendirian" class="card p-3 bg-light mb-2"><b
+                                            class="text-primary">Kepada:</b>
+                                        <div class="row g-2 mt-1">
+                                            <div class="col-6"><input name="tujuanNama" class="form-control"
+                                                    placeholder="Nama"></div>
+                                            <div class="col-6"><input name="tujuanNip" class="form-control"
+                                                    placeholder="NIP"></div>
+                                            <div class="col-6"><input name="tujuanPangkat" class="form-control"
+                                                    placeholder="Pangkat"></div>
+                                            <div class="col-6"><input name="tujuanJabatan" class="form-control"
+                                                    placeholder="Jabatan"></div>
+                                        </div>
+                                    </div>
+                                    <div id="sptAreaKolektif" class="card p-3 bg-light mb-2 hide">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <b class="text-primary d-block">Daftar Pegawai (Kolektif):</b>
                                             <button type="button" class="btn btn-sm btn-outline-success"
-                                                onclick="addRowLampiran()"><i class="fas fa-list"></i> + Baris</button>
+                                                onclick="addRowKolektif('tblSptKolektif')"><i class="fas fa-plus"></i>
+                                                Tambah</button>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-sm bg-white mb-0"
+                                                id="tblSptKolektif">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th width="25%">Nama</th>
+                                                        <th width="20%">NIP</th>
+                                                        <th width="20%">Pangkat</th>
+                                                        <th width="15%">Jabatan</th>
+                                                        <th width="15%">Ket.</th>
+                                                        <th width="5%"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSptNama[]"></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSptNip[]"></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSptPangkat[]"></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSptJabatan[]"></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSptKet[]"></td>
+                                                        <td><button type="button" class="btn btn-sm btn-danger"
+                                                                onclick="this.closest('tr').remove()"><i
+                                                                    class="fas fa-times"></i></button></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered table-sm bg-white mb-0"
-                                            id="tblDynamicLampiran">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th><input type="text"
-                                                            class="form-control form-control-sm text-center fw-bold"
-                                                            value="No"></th>
-                                                    <th><input type="text" class="form-control form-control-sm fw-bold"
-                                                            value="Nama"></th>
-                                                    <th><input type="text" class="form-control form-control-sm fw-bold"
-                                                            value="Keterangan"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td><input type="text"
-                                                            class="form-control form-control-sm text-center" value="1">
-                                                    </td>
-                                                    <td><input type="text" class="form-control form-control-sm"></td>
-                                                    <td><input type="text" class="form-control form-control-sm"></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                    <div id="sptAreaLampiran" class="alert alert-warning py-2 mb-2 hide">
+                                        <i class="fas fa-info-circle me-1"></i> Karena Anda menggunakan mode Lampiran,
+                                        data pegawai akan ditulis "sebagaimana terlampir". Silakan buat lampiran secara
+                                        terpisah.
                                     </div>
-                                    <div class="form-text text-danger mt-1 small"><i class="fas fa-info-circle"></i>
-                                        Kosongkan input jika ada baris/kolom yang tidak ingin dimasukkan ke dokumen.
+                                    <div class="mb-2"><label>Untuk</label><textarea name="isiUmum" class="form-control"
+                                            rows="3" placeholder="Mengikuti kegiatan sosialisai....."></textarea></div>
+                                    <div class="bg-warning bg-opacity-10 p-3 border rounded"><label
+                                            class="fw-bold small">Waktu:</label>
+                                        <div class="row g-2">
+                                            <div class="col-6"><label>Mulai</label><input type="date" name="sptMulai"
+                                                    class="form-control"></div>
+                                            <div class="col-6"><label>Selesai</label><input type="date"
+                                                    name="sptSelesai" class="form-control"></div>
+                                            <div class="col-6"><label>Waktu</label><input name="sptWaktu"
+                                                    class="form-control" placeholder="09.00 WIB s.d. Selesai"></div>
+                                            <div class="col-6"><label>Tempat</label><input name="sptTempat"
+                                                    class="form-control"></div>
+                                        </div>
                                     </div>
-                                    <input type="hidden" name="dataTabelLampiran" id="dataTabelLampiran">
                                 </div>
+                                <div id="box-suket" class="form-box hide">
+                                    <div class="mb-3 p-3 bg-light rounded border">
+                                        <label class="fw-bold text-primary mb-2 d-block">Mode Pengisian Pegawai:</label>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="modeSuket"
+                                                id="modeSuket1" value="sendirian" checked onchange="toggleModeSuket()">
+                                            <label class="form-check-label" for="modeSuket1">1 Pegawai
+                                                (Sendirian)</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="modeSuket"
+                                                id="modeSuket2" value="kolektif" onchange="toggleModeSuket()">
+                                            <label class="form-check-label" for="modeSuket2">Banyak Pegawai
+                                                (Kolektif)</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="modeSuket"
+                                                id="modeSuket3" value="lampiran" onchange="toggleModeSuket()">
+                                            <label class="form-check-label" for="modeSuket3">Lampiran Terpisah</label>
+                                        </div>
+                                    </div>
+                                    <div id="suketAreaSendirian" class="card p-3 bg-light mb-2"><b
+                                            class="text-primary">Menerangkan:</b>
+                                        <div class="row g-2 mt-1">
+                                            <div class="col-6"><input name="tujuanNama" class="form-control"
+                                                    placeholder="Nama"></div>
+                                            <div class="col-6"><input name="tujuanNip" class="form-control"
+                                                    placeholder="NIP"></div>
+                                            <div class="col-6"><input name="tujuanPangkat" class="form-control"
+                                                    placeholder="Pangkat"></div>
+                                            <div class="col-6"><input name="tujuanJabatan" class="form-control"
+                                                    placeholder="Jabatan"></div>
+                                        </div>
+                                    </div>
+                                    <div id="suketAreaKolektif" class="card p-3 bg-light mb-2 hide">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <b class="text-primary d-block">Daftar Pegawai (Kolektif):</b>
+                                            <button type="button" class="btn btn-sm btn-outline-success"
+                                                onclick="addRowKolektif('tblSuketKolektif')"><i class="fas fa-plus"></i>
+                                                Tambah</button>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-sm bg-white mb-0"
+                                                id="tblSuketKolektif">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th width="25%">Nama</th>
+                                                        <th width="20%">NIP</th>
+                                                        <th width="20%">Pangkat</th>
+                                                        <th width="15%">Jabatan</th>
+                                                        <th width="15%">Ket.</th>
+                                                        <th width="5%"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSuketNama[]"></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSuketNip[]"></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSuketPangkat[]"></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSuketJabatan[]"></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSuketKet[]"></td>
+                                                        <td><button type="button" class="btn btn-sm btn-danger"
+                                                                onclick="this.closest('tr').remove()"><i
+                                                                    class="fas fa-times"></i></button></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div id="suketAreaLampiran" class="alert alert-warning py-2 mb-2 hide">
+                                        <i class="fas fa-info-circle me-1"></i> Karena Anda menggunakan mode Lampiran,
+                                        data pegawai akan ditulis "sebagaimana terlampir". Silakan buat lampiran secara
+                                        terpisah.
+                                    </div>
+                                    <div class="mb-2"><label>Isi Keterangan</label><textarea name="suketIsi"
+                                            class="form-control" rows="4">Adalah benar bahwa.......</textarea></div>
+                                </div>
+                                <div id="box-nota" class="form-box hide">
+                                    <div class="mb-2"><label>Kepada Yth.</label><input name="tujuanNama"
+                                            class="form-control"></div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-9"><label>Hal</label><input name="perihal"
+                                                class="form-control">
+                                        </div>
+                                        <div class="col-md-3"><label>Sifat</label><select name="sifatSurat"
+                                                class="form-select">
+                                                <option>Biasa</option>
+                                                <option>Penting</option>
+                                                <option>Rahasia</option>
+                                            </select></div>
+                                    </div>
+                                    <div class="mb-2"><label>Isi Nota</label><textarea name="isiUmum"
+                                            class="form-control" rows="4"></textarea></div>
+                                </div>
+                                <div id="box-sis" class="form-box hide">
+                                    <div class="alert alert-info py-2 small">Data Kepala Sekolah diambil otomatis.</div>
+                                    <div class="mb-3 p-3 bg-light rounded border">
+                                        <label class="fw-bold text-primary mb-2 d-block">Mode Pengisian Siswa:</label>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="modeSis" id="modeSis1"
+                                                value="sendirian" checked onchange="toggleModeSis()">
+                                            <label class="form-check-label" for="modeSis1">1 Siswa (Sendirian)</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="modeSis" id="modeSis2"
+                                                value="kolektif" onchange="toggleModeSis()">
+                                            <label class="form-check-label" for="modeSis2">Banyak Siswa
+                                                (Kolektif)</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="modeSis" id="modeSis3"
+                                                value="lampiran" onchange="toggleModeSis()">
+                                            <label class="form-check-label" for="modeSis3">Lampiran Terpisah</label>
+                                        </div>
+                                    </div>
+                                    <div id="sisAreaSendirian" class="card p-3 bg-light mb-2"><b
+                                            class="text-primary">Data Siswa:</b>
+                                        <div class="row g-2 mt-1">
+                                            <div class="col-6"><label>Nama Siswa</label><input name="siswaNama"
+                                                    class="form-control"></div>
+                                            <div class="col-6"><label>NIS / NISN</label><input name="siswaNis"
+                                                    class="form-control"></div>
+                                            <div class="col-6"><label>TTL</label><input name="siswaTtl"
+                                                    class="form-control"></div>
+                                            <div class="col-6"><label>JK</label><select name="siswaJk"
+                                                    class="form-select">
+                                                    <option>Laki-laki</option>
+                                                    <option>Perempuan</option>
+                                                </select></div>
+                                            <div class="col-6"><label>Kelas</label><input name="siswaKelas"
+                                                    class="form-control"></div>
+                                            <div class="col-6"><label>Ortu</label><input name="siswaOrtu"
+                                                    class="form-control"></div>
+                                        </div>
+                                    </div>
+                                    <div id="sisAreaKolektif" class="card p-3 bg-light mb-2 hide">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <b class="text-primary d-block">Daftar Siswa (Kolektif):</b>
+                                            <button type="button" class="btn btn-sm btn-outline-success"
+                                                onclick="addRowKolektifSis('tblSisKolektif')"><i
+                                                    class="fas fa-plus"></i> Tambah</button>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-sm bg-white mb-0"
+                                                id="tblSisKolektif">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th width="20%">Nama Siswa</th>
+                                                        <th width="15%">NIS</th>
+                                                        <th width="15%">TTL</th>
+                                                        <th width="10%">JK</th>
+                                                        <th width="10%">Kelas</th>
+                                                        <th width="15%">Ortu</th>
+                                                        <th width="10%">Ket.</th>
+                                                        <th width="5%"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSisNama[]"></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSisNis[]"></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSisTtl[]"></td>
+                                                        <td><select class="form-select form-select-sm"
+                                                                name="kolSisJk[]">
+                                                                <option>Laki-laki</option>
+                                                                <option>Perempuan</option>
+                                                            </select></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSisKelas[]"></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSisOrtu[]"></td>
+                                                        <td><input type="text" class="form-control form-control-sm"
+                                                                name="kolSisKet[]"></td>
+                                                        <td><button type="button" class="btn btn-sm btn-danger"
+                                                                onclick="this.closest('tr').remove()"><i
+                                                                    class="fas fa-times"></i></button></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div id="sisAreaLampiran" class="alert alert-warning py-2 mb-2 hide">
+                                        <i class="fas fa-info-circle me-1"></i> Karena Anda menggunakan mode Lampiran,
+                                        data siswa akan ditulis "sebagaimana terlampir". Silakan buat lampiran secara
+                                        terpisah.
+                                    </div>
+                                    <div class="mb-2"><label>Uraian Keterangan</label><textarea name="siswaKet"
+                                            class="form-control" rows="3">Adalah benar peserta didik...</textarea></div>
+                                </div>
+                                <div id="box-pengantar" class="form-box hide">
+                                    <div class="row mb-2">
+                                        <div class="col-md-10"><label>Kepada (Yth.)</label><input name="tujuanNama"
+                                                class="form-control" placeholder="Kepala Dinas..."></div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-6"><label>Up/Cq (kosongkan jika tidak
+                                                menggunakan)</label><input name="tujuanBidang" class="form-control"
+                                                placeholder="Up. Kabid..."></div>
+                                        <div class="col-md-4"><label>Tempat</label><input name="tujuanTempat"
+                                                class="form-control"></div>
+                                    </div>
+                                    <div class="card p-3 bg-light border-0"><b class="text-success mb-2 d-block">Isi
+                                            Tabel
+                                            Pengantar:</b>
+                                        <div class="mb-2"><label>Isi Surat/Barang yg dikirimkan</label><textarea
+                                                name="pengantarIsi" class="form-control" rows="3"></textarea></div>
+                                        <div class="row">
+                                            <div class="col-6"><label>Banyaknya</label><input name="pengantarJml"
+                                                    class="form-control"></div>
+                                            <div class="col-9"><label>Keterangan</label><textarea name="pengantarKet"
+                                                    class="form-control">Disampaikan dengan hormat untuk ditindak lanjuti...</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="box-izin" class="form-box hide">
+                                    <div class="mb-2"><label>TENTANG</label><input name="perihal" class="form-control"
+                                            placeholder="IZIN.........."></div>
+                                    <div class="mb-2"><label>Dasar</label><textarea name="dasarHukum"
+                                            class="form-control" rows="2"></textarea></div>
+                                    <div class="card p-3 bg-light mb-2"><b class="text-primary">Memberikan Izin
+                                            Kepada:</b>
+                                        <div class="row g-2 mt-1">
+                                            <div class="col-6"><input name="tujuanNama" class="form-control"
+                                                    placeholder="Nama"></div>
+                                            <div class="col-6"><input name="tujuanNip" class="form-control"
+                                                    placeholder="NIP"></div>
+                                            <div class="col-6"><input name="tujuanJabatan" class="form-control"
+                                                    placeholder="Jabatan"></div>
+                                            <div class="col-6"><input name="tujuanAlamat" class="form-control"
+                                                    placeholder="Alamat"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-2"><label>Untuk</label><textarea name="izinAlasan"
+                                            class="form-control" rows="2"></textarea></div>
+                                    <div class="row">
+                                        <div class="col-4"><label>Lama</label><input name="sppdLama"
+                                                class="form-control" type="number"></div>
+                                        <div class="col-4"><label>Mulai</label><input type="date" name="sppdTglMulai"
+                                                class="form-control"></div>
+                                        <div class="col-4"><label>s.d</label><input type="date" name="sppdTglSelesai"
+                                                class="form-control"></div>
+                                    </div>
+                                </div>
+                                <div id="box-spmt" class="form-box hide">
+                                    <div class="alert alert-info small py-1">Data Kepala Sekolah diambil otomatis.</div>
+                                    <div class="card p-3 bg-light mb-2"><b class="text-primary">Data Pegawai:</b>
+                                        <div class="row g-2 mt-1">
+                                            <div class="col-6"><input name="tujuanNama" class="form-control"
+                                                    placeholder="Nama"></div>
+                                            <div class="col-6"><input name="tujuanNip" class="form-control"
+                                                    placeholder="NIP"></div>
+                                            <div class="col-6"><input name="tujuanPangkat" class="form-control"
+                                                    placeholder="Pangkat/Golongan"></div>
+                                            <div class="col-6"><input name="tujuanJabatan" class="form-control"
+                                                    placeholder="Jabatan"></div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-2"><label>Berdasarkan Peraturan</label><textarea name="dasarHukum"
+                                            class="form-control" rows="2" placeholder="SK Nomor..."></textarea></div>
+                                    <div class="mb-2"><label>Melaksanakan Tugas Sebagai</label><textarea
+                                            name="spmtJabatanBaru" class="form-control" rows="2"></textarea></div>
+                                    <div class="row mb-2">
+                                        <div class="col-6"><label>TMT (Tanggal Mulai)</label><input type="date"
+                                                name="spmtTglMulai" class="form-control"></div>
+                                        <div class="col-6"><label>Sampai Tanggal</label><input type="date"
+                                                name="spmtTglSelesai" class="form-control"></div>
+                                    </div>
+                                </div>
+                                <div id="box-lampiran" class="form-box hide">
+                                    <div
+                                        class="form-check form-switch mb-3 p-3 bg-warning bg-opacity-10 border rounded">
+                                        <input class="form-check-input ms-0 me-2" type="checkbox" name="tanpaKop"
+                                            id="inTanpaKop" value="ya">
+                                        <label class="form-check-label fw-bold text-danger" for="inTanpaKop">Sembunyikan
+                                            Kop
+                                            Surat (Cetak Tanpa Kop)</label>
+                                    </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-md-12">
+                                            <label class="fw-bold text-primary">Orientasi Halaman</label>
+                                            <select name="orientasiHalaman" class="form-select border-primary">
+                                                <option value="portrait">Portrait (Berdiri)</option>
+                                                <option value="landscape" selected>Landscape (Mendatar)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-md-6"><label>Tentang / Perihal Lampiran</label><input
+                                                name="perihal" class="form-control"
+                                                placeholder="SURAT TUGAS KEPALA SMKN ......."></div>
+                                        <div class="col-md-6"><label>Judul Tabel</label><input name="judulTabel"
+                                                class="form-control" placeholder="DAFTAR NAMA PESERTA KEGIATAN...">
+                                        </div>
+                                    </div>
+
+                                    <div class="card p-3 bg-light border-0">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <b class="text-primary d-block">Isi Data Tabel:</b>
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                                    onclick="addColLampiran()"><i class="fas fa-columns"></i> +
+                                                    Kolom</button>
+                                                <button type="button" class="btn btn-sm btn-outline-success"
+                                                    onclick="addRowLampiran()"><i class="fas fa-list"></i> +
+                                                    Baris</button>
+                                            </div>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-sm bg-white mb-0"
+                                                id="tblDynamicLampiran">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th><input type="text"
+                                                                class="form-control form-control-sm text-center fw-bold"
+                                                                value="No"></th>
+                                                        <th><input type="text"
+                                                                class="form-control form-control-sm fw-bold"
+                                                                value="Nama"></th>
+                                                        <th><input type="text"
+                                                                class="form-control form-control-sm fw-bold"
+                                                                value="Keterangan"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><input type="text"
+                                                                class="form-control form-control-sm text-center"
+                                                                value="1">
+                                                        </td>
+                                                        <td><input type="text" class="form-control form-control-sm">
+                                                        </td>
+                                                        <td><input type="text" class="form-control form-control-sm">
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="form-text text-danger mt-1 small"><i class="fas fa-info-circle"></i>
+                                            Kosongkan input jika ada baris/kolom yang tidak ingin dimasukkan ke dokumen.
+                                        </div>
+                                        <input type="hidden" name="dataTabelLampiran" id="dataTabelLampiran">
+                                    </div>
+                                </div>
+
                             </div>
 
                             <h6 class="text-secondary border-bottom pb-2 mt-4">3. Penandatangan</h6>
-                            <div class="row mb-4">
-                                <div class="col-md-3"><label>Nama Kepala</label><input name="ttdNama"
-                                        class="form-control" required></div>
-                                <div class="col-md-3"><label>Pangkat/Gol</label><select name="ttdPangkat"
-                                        class="form-select">
-                                        <option>Penata Muda (III/a)</option>
-                                        <option>Penata Muda Tingkat I (III/b)</option>
-                                        <option>Penata (III/c)</option>
-                                        <option>Penata Tingkat I (III/d)</option>
-                                        <option>Pembina (IV/a)</option>
-                                        <option>Pembina Tingkat I (IV/b)</option>
-                                        <option>Pembina Utama Muda (IV/c)</option>
-                                        <option>Pembina Utama Madya (IV/d)</option>
-                                        <option>Pembina Utama (IV/e)</option>
-                                    </select></div>
-                                <div class="col-md-3"><label>NIP</label><input name="ttdNip" class="form-control"
-                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" required></div>
-                                <div class="col-md-3"><label>Tanggal TTD</label><input type="date" class="form-control"
-                                        id="inpTglSaja" onchange="updateTanggalSaja()" required><input type="hidden"
-                                        name="tanggalSaja" id="valTglSaja"></div>
-                            </div>
+                            <div class="p-3 mb-4"
+                                style="background-color: #e0f2fe; border: 1px solid #7dd3fc; border-radius: 8px;">
+                                <div class="row mb-3">
+                                    <div class="col-md-4"><label>Nama Kepala</label><input name="ttdNama"
+                                            class="form-control" readonly style="background-color: #e9ecef;"></div>
+                                    <div class="col-md-4"><label>NIP</label><input name="ttdNip" class="form-control"
+                                            readonly style="background-color: #e9ecef;"></div>
+                                    <div class="col-md-4"><label>Pangkat/Gol</label><input name="ttdPangkat"
+                                            class="form-control" readonly style="background-color: #e9ecef;"></div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4"><label>Tempat Titimangsa</label><input
+                                            id="inpTempatTitimangsa" name="tempatTitimangsa" class="form-control"
+                                            required></div>
+                                    <div class="col-md-4"><label>Tanggal Surat</label><input type="date"
+                                            class="form-control" id="inpTglSaja" name="inpTglSaja"
+                                            onchange="updateTanggalSaja()" required><input type="hidden"
+                                            name="tanggalSaja" id="valTglSaja"></div>
+                                </div>
 
-                            <div class="mb-4 hide" id="box-tembusan">
-                                <label>Tembusan</label>
-                                <textarea name="tembusan" class="form-control" rows="3"
-                                    placeholder="Tembusan :&#10;1. .................&#10;2. ................."></textarea>
-                                <div class="form-text text-info small"><i class="fas fa-info-circle"></i> Kosongkan jika
-                                    tidak memerlukan tembusan.</div>
+                                <div class="mb-4 mt-2">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                            id="switchAtasNama" name="useAtasNama" onchange="toggleAtasNama()">
+                                        <label class="form-check-label fw-bold text-primary"
+                                            for="switchAtasNama">Aktifkan Atas Nama (a.n.)</label>
+                                    </div>
+                                    <div id="boxAtasNama" class="row hide border rounded p-3 bg-light m-0">
+                                        <div class="col-md-12 mb-2">
+                                            <label>Jabatan (misal: Wakil Kepala / Kepala TU)</label>
+                                            <input type="text" name="anJabatan" class="form-control"
+                                                placeholder="Kasubbag TU/ Waka. Kesiswaan / Waka. Humas">
+                                        </div>
+                                        <div class="col-md-4"><label>Nama Pejabat</label><input name="anNama"
+                                                class="form-control"></div>
+                                        <div class="col-md-4"><label>NIP</label><input name="anNip"
+                                                class="form-control"></div>
+                                        <div class="col-md-4"><label>Pangkat/Gol</label><input name="anPangkat"
+                                                class="form-control"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4 hide" id="box-tembusan">
+                                    <label>Tembusan</label>
+                                    <textarea name="tembusan" class="form-control" rows="3"
+                                        placeholder="Tembusan :&#10;1. .................&#10;2. ................."></textarea>
+                                    <div class="form-text text-info small"><i class="fas fa-info-circle"></i> Kosongkan
+                                        jika
+                                        tidak memerlukan tembusan.</div>
+                                </div>
                             </div>
                             <button type="submit" id="btnGen"
                                 class="btn btn-success w-100 py-3 fw-bold shadow-sm"><span>GENERATE DOKUMEN</span><span
@@ -638,101 +991,113 @@
                 </div>
             </div>
 
-            <div id="page-masuk" class="page-view hide">
-                <div class="card p-3 shadow-sm border-0">
-                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                        <h5 class="text-primary mb-0">Arsip Surat Masuk</h5>
-                        <div><button class="btn btn-primary btn-sm me-1" onclick="modalInput('masuk', 'add')"><i
-                                    class="fas fa-plus"></i> Input Baru</button><button
-                                class="btn btn-light btn-sm btn-refresh text-primary" onclick="refreshTable('masuk')"
-                                title="Refresh"><i class="fas fa-sync-alt"></i></button></div>
-                    </div>
-                    <div class="row g-2 mb-3 align-items-end">
-                        <div class="col-md-3"><label class="small">Dari</label><input type="date" id="filterM_Start"
-                                class="form-control form-control-sm"></div>
-                        <div class="col-md-3"><label class="small">Sampai</label><input type="date" id="filterM_End"
-                                class="form-control form-control-sm"></div>
-                        <div class="col-md-6"><button class="btn btn-danger btn-sm" onclick="downloadPDF('masuk')"><i
-                                    class="fas fa-file-pdf"></i> Laporan PDF</button><button
-                                class="btn btn-success btn-sm" onclick="downloadExcel('masuk')"><i
-                                    class="fas fa-file-excel"></i> Export Excel</button></div>
-                    </div>
-                    <div class="table-responsive">
-                        <table id="tMasuk" class="table table-striped table-bordered w-100 table-full table-hover">
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="page-keluar" class="page-view hide">
-                <div class="card p-3 shadow-sm border-0">
-                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                        <h5 class="text-success mb-0">Arsip Surat Keluar</h5>
-                        <div><button class="btn btn-success btn-sm me-1" onclick="modalInput('keluar', 'add')"><i
-                                    class="fas fa-plus"></i> Input Baru</button><button
-                                class="btn btn-light btn-sm btn-refresh text-success" onclick="refreshTable('keluar')"
-                                title="Refresh"><i class="fas fa-sync-alt"></i></button></div>
-                    </div>
-                    <div class="row g-2 mb-3 align-items-end">
-                        <div class="col-md-3"><label class="small">Dari</label><input type="date" id="filterK_Start"
-                                class="form-control form-control-sm"></div>
-                        <div class="col-md-3"><label class="small">Sampai</label><input type="date" id="filterK_End"
-                                class="form-control form-control-sm"></div>
-                        <div class="col-md-6"><button class="btn btn-danger btn-sm" onclick="downloadPDF('keluar')"><i
-                                    class="fas fa-file-pdf"></i> Laporan PDF</button><button
-                                class="btn btn-success btn-sm" onclick="downloadExcel('keluar')"><i
-                                    class="fas fa-file-excel"></i> Export Excel</button></div>
-                    </div>
-                    <div class="table-responsive">
-                        <table id="tKeluar" class="table table-striped table-bordered w-100 table-full table-hover">
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="page-users" class="page-view hide">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="fas fa-user-shield me-2"></i>Informasi Akun Login</h5>
-                        <button class="btn btn-sm btn-light text-primary fw-bold online-only shadow-sm" style="display:none;" onclick="modalUser('add')"><i class="fas fa-user-plus me-1"></i>Tambah Akun</button>
+            <!-- SURAT MASUK (INBOX) -->
+            <div id="page-inbox" class="page-view hide">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0 text-primary"><i class="fas fa-inbox me-2"></i>Surat Masuk (Eksternal)
+                        </h5>
+                        <button class="btn btn-sm btn-outline-primary" onclick="loadInboxTable()"><i
+                                class="fas fa-sync-alt"></i> Refresh</button>
                     </div>
                     <div class="card-body">
-                        <div class="alert alert-info border-info d-flex align-items-start gap-3 mb-4">
-                            <i class="fas fa-info-circle fa-lg mt-1 text-info flex-shrink-0"></i>
-                            <div>
-                                <strong>Aplikasi ini menggunakan 1 akun tunggal (Admin).</strong><br>
-                                <span class="text-muted small">Kredensial login sudah dikonfigurasi oleh developer.
-                                    Hubungi penyedia aplikasi jika perlu penggantian username / password.</span>
-                            </div>
-                        </div>
-
                         <div class="table-responsive">
-                            <table class="table table-bordered align-middle">
-                                <thead class="table-primary">
+                            <table class="table table-bordered table-striped table-hover w-100" id="tInboxEksternal">
+                                <thead class="table-primary text-center align-middle">
                                     <tr>
-                                        <th style="width:50px">#</th>
-                                        <th><i class="fas fa-user me-1"></i> Username</th>
-                                        <th><i class="fas fa-key me-1"></i> Password</th>
-                                        <th><i class="fas fa-id-badge me-1"></i> Role</th>
-                                        <th><i class="fas fa-info-circle me-1"></i> Nama / Keterangan</th>
-                                        <th class="online-only" style="display:none;width:120px;">Aksi</th>
+                                        <th style="width:50px;">No</th>
+                                        <th>Waktu Masuk</th>
+                                        <th>Pengirim & Lembaga</th>
+                                        <th>Nomor & Tanggal Surat</th>
+                                        <th>Perihal</th>
+                                        <th>Status</th>
+                                        <th style="width:140px;">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tbody-users">
-                                    <!-- Diisi secara dinamis -->
+                                <tbody id="tbody-inbox-eksternal">
+                                    <!-- Diisi via JS -->
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+            </div>
 
-                        <div class="alert alert-warning mt-3 d-flex align-items-start gap-2">
-                            <i class="fas fa-exclamation-triangle mt-1 flex-shrink-0"></i>
-                            <span class="small">Hafalkan atau catat username & password di atas.
-                                Jangan bagikan ke orang lain. Untuk penggantian kredensial,
-                                hubungi <strong>penyedia aplikasi SiDiMAS</strong>.</span>
+            <!-- AGENDA SURAT -->
+            <div id="page-agenda" class="page-view hide">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white pb-0 border-bottom-0">
+                        <ul class="nav nav-tabs" id="agendaTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active fw-bold text-primary" id="masuk-tab" data-bs-toggle="tab"
+                                    data-bs-target="#tab-masuk" type="button" role="tab"><i
+                                        class="fas fa-inbox me-2"></i>Arsip Surat Masuk</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold text-success" id="keluar-tab" data-bs-toggle="tab"
+                                    data-bs-target="#tab-keluar" type="button" role="tab"><i
+                                        class="fas fa-paper-plane me-2"></i>Arsip Surat Keluar</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="agendaTabsContent">
+                            <div class="tab-pane fade show active" id="tab-masuk" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                    <h5 class="text-primary mb-0 d-none d-md-block">Arsip Surat Masuk</h5>
+                                    <div class="ms-auto"><button class="btn btn-primary btn-sm me-1"
+                                            onclick="modalInput('masuk', 'add')"><i class="fas fa-plus"></i> Input
+                                            Baru</button><button class="btn btn-light btn-sm btn-refresh text-primary"
+                                            onclick="refreshTable('masuk')" title="Refresh"><i
+                                                class="fas fa-sync-alt"></i></button></div>
+                                </div>
+                                <div class="row g-2 mb-3 align-items-end">
+                                    <div class="col-md-3"><label class="small">Dari</label><input type="date"
+                                            id="filterM_Start" class="form-control form-control-sm"></div>
+                                    <div class="col-md-3"><label class="small">Sampai</label><input type="date"
+                                            id="filterM_End" class="form-control form-control-sm"></div>
+                                    <div class="col-md-6"><button class="btn btn-danger btn-sm"
+                                            onclick="downloadPDF('masuk')"><i class="fas fa-file-pdf"></i> Laporan
+                                            PDF</button><button class="btn btn-success btn-sm"
+                                            onclick="downloadExcel('masuk')"><i class="fas fa-file-excel"></i> Export
+                                            Excel</button></div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table id="tMasuk"
+                                        class="table table-striped table-bordered w-100 table-full table-hover"></table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="tab-keluar" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                    <h5 class="text-success mb-0 d-none d-md-block">Arsip Surat Keluar</h5>
+                                    <div class="ms-auto"><button class="btn btn-success btn-sm me-1"
+                                            onclick="modalInput('keluar', 'add')"><i class="fas fa-plus"></i> Input
+                                            Baru</button><button class="btn btn-light btn-sm btn-refresh text-success"
+                                            onclick="refreshTable('keluar')" title="Refresh"><i
+                                                class="fas fa-sync-alt"></i></button></div>
+                                </div>
+                                <div class="row g-2 mb-3 align-items-end">
+                                    <div class="col-md-3"><label class="small">Dari</label><input type="date"
+                                            id="filterK_Start" class="form-control form-control-sm"></div>
+                                    <div class="col-md-3"><label class="small">Sampai</label><input type="date"
+                                            id="filterK_End" class="form-control form-control-sm"></div>
+                                    <div class="col-md-6"><button class="btn btn-danger btn-sm"
+                                            onclick="downloadPDF('keluar')"><i class="fas fa-file-pdf"></i> Laporan
+                                            PDF</button><button class="btn btn-success btn-sm"
+                                            onclick="downloadExcel('keluar')"><i class="fas fa-file-excel"></i> Export
+                                            Excel</button></div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table id="tKeluar"
+                                        class="table table-striped table-bordered w-100 table-full table-hover"></table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+
 
 
             <div id="page-setting" class="page-view hide">
@@ -747,7 +1112,7 @@
                             onchange="importOfflineBackup(event)">
 
 
-                        <ul class="nav nav-tabs mb-4" id="settingTabs" role="tablist">
+                        <ul class="nav nav-tabs mb-3 mt-1" id="settingTabs" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active fw-bold text-success" id="sistem-tab"
                                     data-bs-toggle="tab" data-bs-target="#sistem" type="button" role="tab"><i
@@ -758,109 +1123,165 @@
                                     data-bs-target="#backup" type="button" role="tab"><i
                                         class="fas fa-database me-2"></i>Backup & Restore</button>
                             </li>
+                            <li class="nav-item admin-only" role="presentation">
+                                <button class="nav-link fw-bold text-warning" id="akun-tab" data-bs-toggle="tab"
+                                    data-bs-target="#akun" type="button" role="tab"><i
+                                        class="fas fa-user-shield me-2"></i>Manajemen Akun</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold text-info" id="kode-tab" data-bs-toggle="tab"
+                                    data-bs-target="#kode-custom" type="button" role="tab"><i
+                                        class="fas fa-list-ol me-2"></i>Kode Klasifikasi Daerah (custom)</button>
+                            </li>
                         </ul>
                         <div class="tab-content" id="settingTabsContent">
                             <div class="tab-pane fade show active" id="sistem" role="tabpanel">
                                 <form onsubmit="simpanSetting(event)" autocomplete="off">
-                                    <h6 class="text-primary border-bottom pb-2">Identitas Sekolah</h6>
-                                    <div class="row mb-2">
-                                        <div class="col-md-6">
-                                            <label class="text-success">Logo Instansi</label>
-                                            <input type="file" id="fLogo1" class="form-control" accept="image/*">
-                                            <input type="hidden" id="delLogo1" value="0">
-                                            <div class="mt-2 text-center">
-                                                <img id="previewLogo1" class="img-thumbnail hide mb-1"
-                                                    style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
-                                                <br>
-                                                <button type="button" class="btn btn-sm btn-outline-danger hide"
-                                                    id="btnHapusLogo1" onclick="hapusPreview(1)"><i
-                                                        class="fas fa-trash"></i>
-                                                    Hapus Logo</button>
+                                    <div class="row">
+                                        <div class="col-md-6 border-end pe-3">
+                                            <h6 class="text-primary border-bottom pb-2">Identitas Sekolah</h6>
+                                            <div class="row mb-2">
+                                                <div class="col-md-6"><label class="text-success">Nama
+                                                        Instansi</label><input name="namaInstansi" id="inInstansi"
+                                                        class="form-control" placeholder="PEMERINTAH PROVINSI..."></div>
+                                                <div class="col-md-6"><label class="text-success">Nama Dinas/OPD (boleh
+                                                        dikosongkan)</label><input name="namaOpd" id="inOpd"
+                                                        class="form-control" placeholder="ex. DINAS PENDIDIKAN......">
+                                                </div>
+                                            </div>
+                                            <label class="text-success">Nama Sekolah</label><input name="namaSekolah"
+                                                id="inSekolah" class="form-control mb-2 fw-bold">
+                                            <label class="text-success">Alamat Lengkap</label><input
+                                                name="alamatSekolah" id="inAlamat" class="form-control mb-2">
+
+                                            <div class="row mb-2">
+                                                <div class="col-md-6"><label class="text-success">Email</label><input
+                                                        name="emailSekolah" id="inEmail" class="form-control"></div>
+                                                <div class="col-md-6"><label class="text-success">Website</label><input
+                                                        name="webSekolah" id="inWeb" class="form-control"></div>
+                                            </div>
+
+                                            <h6 class="text-primary border-bottom pb-2 mt-4">Data Kepala Sekolah</h6>
+                                            <div class="row mb-2">
+                                                <div class="col-md-6"><label class="text-success">Nama
+                                                        Lengkap</label><input name="kepsekNama" id="inKepsekNama"
+                                                        class="form-control"></div>
+                                                <div class="col-md-6"><label class="text-success">NIP</label><input
+                                                        name="kepsekNip" id="inKepsekNip" class="form-control"
+                                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col-12"><label
+                                                        class="text-success">Pangkat/Golongan</label><select
+                                                        name="kepsekPangkat" id="inKepsekPangkat" class="form-select">
+                                                        <option>Pengatur Muda (II/a)</option>
+                                                        <option>Pengatur Muda Tingkat I (II/b)</option>
+                                                        <option>Pengatur (II/c)</option>
+                                                        <option>Pengatur Tingkat I (II/d)</option>
+                                                        <option>Penata Muda (III/a)</option>
+                                                        <option>Penata Muda Tingkat I (III/b)</option>
+                                                        <option>Penata (III/c)</option>
+                                                        <option>Penata Tingkat I (III/d)</option>
+                                                        <option>Pembina (IV/a)</option>
+                                                        <option>Pembina Tingkat I (IV/b)</option>
+                                                        <option>Pembina Utama Muda (IV/c)</option>
+                                                        <option>Pembina Utama Madya (IV/d)</option>
+                                                        <option>Pembina Utama (IV/e)</option>
+                                                    </select></div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <label class="text-success">Logo Sekolah</label>
-                                            <input type="file" id="fLogo2" class="form-control" accept="image/*">
-                                            <input type="hidden" id="delLogo2" value="0">
-                                            <div class="mt-2 text-center">
-                                                <img id="previewLogo2" class="img-thumbnail hide mb-1"
-                                                    style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
-                                                <br>
-                                                <button type="button" class="btn btn-sm btn-outline-danger hide"
-                                                    id="btnHapusLogo2" onclick="hapusPreview(2)"><i
-                                                        class="fas fa-trash"></i>
-                                                    Hapus Logo</button>
+
+                                        <div class="col-md-6 ps-3">
+                                            <h6 class="text-primary border-bottom pb-2">Logo Instansi &amp; Sekolah</h6>
+                                            <div class="row mb-2">
+                                                <div class="col-md-6">
+                                                    <label class="text-success">Logo Instansi</label>
+                                                    <input type="file" id="fLogo1" class="form-control"
+                                                        accept="image/*">
+                                                    <input type="hidden" id="delLogo1" value="0">
+                                                    <div class="mt-2 text-center">
+                                                        <img id="previewLogo1" class="img-thumbnail hide mb-1"
+                                                            style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
+                                                        <br>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger hide"
+                                                            id="btnHapusLogo1" onclick="hapusPreview(1)"><i
+                                                                class="fas fa-trash"></i>
+                                                            Hapus Logo</button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="text-success">Logo Sekolah</label>
+                                                    <input type="file" id="fLogo2" class="form-control"
+                                                        accept="image/*">
+                                                    <input type="hidden" id="delLogo2" value="0">
+                                                    <div class="mt-2 text-center">
+                                                        <img id="previewLogo2" class="img-thumbnail hide mb-1"
+                                                            style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
+                                                        <br>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger hide"
+                                                            id="btnHapusLogo2" onclick="hapusPreview(2)"><i
+                                                                class="fas fa-trash"></i>
+                                                            Hapus Logo</button>
+                                                    </div>
+                                                </div>
                                             </div>
+
+                                            <h6 class="text-primary border-bottom pb-2 mt-4">Pilihan Warna Tema</h6>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label class="text-success">Tema 1</label>
+                                                    <input type="color" name="warnaAplikasi" id="inWarna"
+                                                        class="form-control form-control-color w-100 mb-3">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="text-success">Tema 2</label>
+                                                    <input type="color" name="warnaAplikasi2" id="inWarna2"
+                                                        class="form-control form-control-color w-100 mb-3">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="text-success">Tema 3</label>
+                                                    <input type="color" name="warnaAplikasi3" id="inWarna3"
+                                                        class="form-control form-control-color w-100 mb-3">
+                                                </div>
+                                            </div>
+
+                                            <button class="btn btn-primary w-100 mt-2 py-2 fw-bold"><i
+                                                    class="fas fa-save me-2"></i> SIMPAN
+                                                PENGATURAN</button>
                                         </div>
                                     </div>
-                                    <div class="row mb-2">
-                                        <div class="col-md-6"><label class="text-success">Nama Instansi</label><input
-                                                name="namaInstansi" id="inInstansi" class="form-control"
-                                                placeholder="PEMERINTAH PROVINSI..."></div>
-                                        <div class="col-md-6"><label class="text-success">Nama Dinas/OPD (boleh
-                                                dikosongkan)</label><input name="namaOpd" id="inOpd"
-                                                class="form-control" placeholder="ex. DINAS PENDIDIKAN......"></div>
-                                    </div>
-                                    <label class="text-success">Nama Sekolah</label><input name="namaSekolah"
-                                        id="inSekolah" class="form-control mb-2 fw-bold">
-                                    <label class="text-success">Alamat Lengkap</label><input name="alamatSekolah"
-                                        id="inAlamat" class="form-control mb-2">
-
-                                    <div class="row mb-2">
-                                        <div class="col-md-6"><label class="text-success">Email</label><input
-                                                name="emailSekolah" id="inEmail" class="form-control"></div>
-                                        <div class="col-md-6"><label class="text-success">Website</label><input
-                                                name="webSekolah" id="inWeb" class="form-control"></div>
-                                    </div>
-
-                                    <div class="mb-3"><label class="fw-bold text-success">Kode Lembaga</label><input
-                                            class="form-control border-success" list="listLembaga" name="kodeLembaga"
-                                            id="inKodeLembaga" placeholder="ex: SMAN 1 KOJA"><datalist
-                                            id="listLembaga"></datalist></div>
-
-                                    <h6 class="text-primary border-bottom pb-2 mt-4">Data Kepala Sekolah</h6>
-                                    <div class="row mb-2">
-                                        <div class="col-md-6"><label class="text-success">Nama Lengkap</label><input
-                                                name="kepsekNama" id="inKepsekNama" class="form-control"></div>
-                                        <div class="col-md-6"><label class="text-success">NIP</label><input
-                                                name="kepsekNip" id="inKepsekNip" class="form-control"
-                                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-md-6"><label
-                                                class="text-success">Pangkat/Golongan</label><select
-                                                name="kepsekPangkat" id="inKepsekPangkat" class="form-select">
-                                                <option>Pengatur Muda (II/a)</option>
-                                                <option>Pengatur Muda Tingkat I (II/b)</option>
-                                                <option>Pengatur (II/c)</option>
-                                                <option>Pengatur Tingkat I (II/d)</option>
-                                                <option>Penata Muda (III/a)</option>
-                                                <option>Penata Muda Tingkat I (III/b)</option>
-                                                <option>Penata (III/c)</option>
-                                                <option>Penata Tingkat I (III/d)</option>
-                                                <option>Pembina (IV/a)</option>
-                                                <option>Pembina Tingkat I (IV/b)</option>
-                                                <option>Pembina Utama Muda (IV/c)</option>
-                                                <option>Pembina Utama Madya (IV/d)</option>
-                                                <option>Pembina Utama (IV/e)</option>
-                                            </select></div>
-                                        <div class="col-md-6"><label class="text-success">Kota/Tempat TTD
-                                                Surat</label><input name="kotaSurat" id="inKotaSurat"
-                                                class="form-control"></div>
-                                    </div>
-
-
-
-                                    <h6 class="text-primary border-bottom pb-2 mt-4">Tampilan</h6>
-                                    <label class="text-success">Warna Tema</label><input type="color"
-                                        name="warnaAplikasi" id="inWarna"
-                                        class="form-control form-control-color w-100 mb-3">
-                                    <button class="btn btn-primary w-100"><i class="fas fa-save"></i> SIMPAN
-                                        PENGATURAN</button>
                                 </form>
                             </div>
                             <div class="tab-pane fade" id="backup" role="tabpanel">
-                                <div class="card border-0 shadow-sm mb-4">
+                                <div class="mb-2 p-3 bg-light border border-info rounded">
+                                    <label class="fw-bold text-info mb-1"><i class="fas fa-link me-2"></i>Link
+                                        Sinkronisasi (Google Apps Script)</label>
+                                    <div class="input-group">
+                                        <input type="text" id="inApiUrl" class="form-control bg-white text-muted"
+                                            readonly value="">
+                                        <button class="btn btn-info text-white fw-bold" type="button"
+                                            onclick="salinLinkExec()"><i class="far fa-copy me-1"></i> Salin
+                                            Link</button>
+                                    </div>
+                                    <small class="text-muted mt-1 d-block">Ini adalah link eksekusi (Exec URL) aplikasi
+                                        Anda yang digunakan untuk proses sinkronisasi database secara online.</small>
+                                </div>
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', () => {
+                                        if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.EXEC_LINK) {
+                                            document.getElementById('inApiUrl').value = APP_CONFIG.EXEC_LINK;
+                                        }
+                                    });
+                                    function salinLinkExec() {
+                                        const copyText = document.getElementById('inApiUrl');
+                                        copyText.select();
+                                        copyText.setSelectionRange(0, 99999);
+                                        navigator.clipboard.writeText(copyText.value).then(() => {
+                                            Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Link disalin ke clipboard!', timer: 1500, showConfirmButton: false });
+                                        });
+                                    }
+                                </script>
+                                <div class="card border-0 shadow-sm mb-2">
                                     <div class="card-header bg-secondary text-white fw-bold">
                                         <i class="fas fa-database me-2"></i>Backup & Restore Data
                                     </div>
@@ -932,7 +1353,7 @@
                                 </div>
 
 
-                                <div class="card border-info mt-3 mb-2 shadow-sm">
+                                <div class="card border-info mt-1 mb-2 shadow-sm">
                                     <div class="card-header bg-info text-white fw-bold">
                                         <i class="fas fa-file-word me-2"></i>Template Surat (.docx)
                                     </div>
@@ -953,7 +1374,140 @@
                                     </div>
                                 </div>
                             </div>
+
+
+                            <div class="tab-pane fade" id="akun" role="tabpanel">
+                                <div
+                                    class="card-header bg-white pb-2 border-bottom-0 d-flex justify-content-between align-items-center px-0">
+                                    <h6 class="text-warning mb-0"><i class="fas fa-user-shield me-2"></i>Informasi Akun
+                                        Login</h6>
+                                    <button class="btn btn-sm btn-outline-warning fw-bold online-only shadow-sm"
+                                        style="display:none;" onclick="modalUser('add')"><i
+                                            class="fas fa-user-plus me-1"></i>Tambah Akun</button>
+                                </div>
+                                <div class="alert alert-info border-info d-flex align-items-start gap-3 mb-4 mt-2">
+                                    <i class="fas fa-info-circle fa-lg mt-1 text-info flex-shrink-0"></i>
+                                    <div>
+                                        <strong>Aplikasi ini menggunakan 1 akun tunggal (Admin).</strong><br>
+                                        <span class="text-muted small">Kredensial login sudah dikonfigurasi oleh
+                                            developer.
+                                            Hubungi penyedia aplikasi jika perlu penggantian username / password.</span>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-bordered align-middle table-sm">
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th style="width:50px">#</th>
+                                                <th><i class="fas fa-user me-1"></i> Username</th>
+                                                <th><i class="fas fa-key me-1"></i> Password</th>
+                                                <th><i class="fas fa-id-badge me-1"></i> Role</th>
+                                                <th><i class="fas fa-info-circle me-1"></i> Nama / Keterangan</th>
+                                                <th class="online-only" style="display:none;width:120px;">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbody-users">
+                                            <!-- Diisi secara dinamis -->
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="alert alert-warning mt-3 d-flex align-items-start gap-2">
+                                    <i class="fas fa-exclamation-triangle mt-1 flex-shrink-0"></i>
+                                    <span class="small">Hafalkan atau catat username & password di atas.
+                                        Jangan bagikan ke orang lain. Untuk penggantian kredensial,
+                                        hubungi <strong>penyedia aplikasi SiDiMAS</strong>.</span>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="kode-custom" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h6 class="text-info border-bottom pb-2 mb-2"><i
+                                                class="fas fa-list-ol me-2"></i>Kode Nama Lembaga (Prefix Surat)</h6>
+
+                                        <div class="mb-2 p-3 bg-light rounded border border-success">
+                                            <label class="fw-bold text-success mb-2">Ketik Kode Lembaga</label>
+                                            <div class="input-group" style="max-width: 400px;">
+                                                <input class="form-control border-success" name="kodeLembaga"
+                                                    id="inKodeLembaga" placeholder="contoh: SMAN 1 ABC"
+                                                    form="form-sistem">
+                                                <button class="btn btn-success fw-bold" type="submit"
+                                                    form="form-sistem"><i class="fas fa-save me-1"></i> Simpan
+                                                    Kode</button>
+                                            </div>
+                                            <small class="text-muted mt-1 d-block">Simpan perubahan kode nama lembaga ke
+                                                sistem.
+                                                Kode ini akan ditampilkan otomatis pada nomor surat keluar.</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h6 class="text-info border-bottom pb-2 mb-2"><i
+                                                class="fas fa-plus-circle me-2"></i>Tambah/Edit Kode Klasifikasi Daerah
+                                        </h6>
+
+                                        <form onsubmit="simpanKodeCustom(event)" autocomplete="off"
+                                            class="mb-2 p-3 bg-light rounded border border-info">
+                                            <input type="hidden" id="kc_id">
+                                            <div class="row g-2 align-items-end">
+                                                <div class="col-md-2">
+                                                    <label class="small fw-bold">Kode Klasifikasi</label>
+                                                    <input type="text" id="kc_kode" class="form-control form-control-sm"
+                                                        placeholder="Contoh: 000" required>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label class="small fw-bold">Uraian / Keterangan</label>
+                                                    <input type="text" id="kc_uraian"
+                                                        class="form-control form-control-sm" placeholder="Contoh: UMUM"
+                                                        required>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="submit"
+                                                        class="btn btn-info btn-sm text-white w-100 fw-bold"><i
+                                                            class="fas fa-save me-1"></i> Simpan</button>
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div class="input-group" style="max-width: 300px;">
+                                                <span class="input-group-text bg-white"><i
+                                                        class="fas fa-search"></i></span>
+                                                <input type="text" id="cariKodeCustom"
+                                                    class="form-control form-control-sm"
+                                                    placeholder="Cari kode / uraian..." onkeyup="filterKodeCustom()">
+                                            </div>
+                                            <button type="button" class="btn btn-success btn-sm fw-bold"
+                                                onclick="modalImportExcel()"><i class="fas fa-file-excel me-1"></i>
+                                                Import
+                                                Excel</button>
+                                        </div>
+
+                                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                            <table class="table table-bordered table-striped table-sm w-100"
+                                                id="tKodeCustom">
+                                                <thead class="table-info">
+                                                    <tr>
+                                                        <th style="width: 50px;">No</th>
+                                                        <th style="width: 150px;">Kode</th>
+                                                        <th>Uraian</th>
+                                                        <th style="width: 100px;">Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbody-kodecustom">
+                                                    <!-- Diisi dinamis -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
 
 
 
@@ -975,21 +1529,23 @@
                 <i class="fas fa-chart-pie"></i>
                 <span>Dashboard</span>
             </a>
-            <a class="nav-item-mobile" onclick="nav('masuk', this)">
+            <a class="nav-item-mobile" onclick="nav('inbox', this)" style="position: relative;">
                 <i class="fas fa-inbox"></i>
                 <span>Srt Masuk</span>
+                <span id="badgeInboxMobile" class="badge bg-danger rounded-circle text-white"
+                    style="position: absolute; top: 0; right: 10px; font-size: 0.7em; display: none; padding: 0.25em 0.4em;">0</span>
             </a>
             <a class="nav-item-mobile btn-buat-surat" onclick="nav('buat', this)">
                 <div class="icon-wrapper"><i class="fas fa-magic"></i></div>
                 <span>Buat Surat</span>
             </a>
-            <a class="nav-item-mobile" onclick="nav('keluar', this)">
-                <i class="fas fa-paper-plane"></i>
-                <span>Srt Keluar</span>
+            <a class="nav-item-mobile" onclick="nav('agenda', this)">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Agenda</span>
             </a>
-            <a class="nav-item-mobile text-danger" onclick="doLogout()">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
+            <a class="nav-item-mobile" onclick="nav('setting', this)">
+                <i class="fas fa-tools"></i>
+                <span>Setting</span>
             </a>
         </div>
     </div>
@@ -1027,8 +1583,15 @@
                                     class="form-control" rows="2"></textarea></div>
                             <div class="mb-2"><label>Keterangan</label><input name="keterangan" id="inKetM"
                                     class="form-control"></div>
-                            <div class="mb-2"><label class="fw-bold">Upload Scan (PDF/IMG/DOC/ZIP Max
-                                    500KB)</label><input type="file" id="fileMasuk" class="form-control"></div>
+                            <div class="mb-2">
+                                <label class="fw-bold d-flex justify-content-between align-items-center">
+                                    Upload Scan (PDF/IMG/DOC/ZIP Max 500KB)
+                                    <button type="button" class="btn btn-sm btn-info text-white"
+                                        onclick="scanImageAndAutofill('fileMasuk', 'masuk')"><i
+                                            class="fas fa-magic"></i> Auto-Isi (OCR)</button>
+                                </label>
+                                <input type="file" id="fileMasuk" class="form-control" accept=".jpg,.jpeg,.png,.pdf">
+                            </div>
                         </div>
                         <div id="divKeluar" class="hide">
                             <div class="row mb-2">
@@ -1059,8 +1622,15 @@
                                     class="form-control" rows="2"></textarea></div>
                             <div class="mb-2"><label>Keterangan</label><input name="keterangan" id="inKetK"
                                     class="form-control"></div>
-                            <div class="mb-2"><label class="fw-bold">Upload File (PDF/IMG/DOC/ZIP Max
-                                    500KB)</label><input type="file" id="fileKeluar" class="form-control"></div>
+                            <div class="mb-2">
+                                <label class="fw-bold d-flex justify-content-between align-items-center">
+                                    Upload File (PDF/IMG/DOC/ZIP Max 500KB)
+                                    <button type="button" class="btn btn-sm btn-info text-white"
+                                        onclick="scanImageAndAutofill('fileKeluar', 'keluar')"><i
+                                            class="fas fa-magic"></i> Auto-Isi (OCR)</button>
+                                </label>
+                                <input type="file" id="fileKeluar" class="form-control" accept=".jpg,.jpeg,.png,.pdf">
+                            </div>
                         </div>
                         <button id="btnSimpan" class="btn btn-primary w-100 mt-3 fw-bold"><span>SIMPAN DATA</span><span
                                 class="spinner-border spinner-border-sm hide" role="status"></span></button>
@@ -1124,7 +1694,7 @@
     <input type="hidden" id="b64Logo2">
 
     <div class="modal fade" id="modalPrivasi" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Kebijakan Privasi</h5><button type="button" class="btn-close"
@@ -1177,9 +1747,7 @@
     <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
     <script src="assets/js/jquery-3.6.0.min.js"></script>
     <script src="assets/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/highcharts.js"></script>
-    <script src="assets/js/exporting.js"></script>
-    <script src="assets/js/accessibility.js"></script>
+    <script src="assets/js/chart.umd.js"></script>
     <script src="assets/js/jquery.dataTables.min.js"></script>
     <script src="assets/js/dataTables.bootstrap5.min.js"></script>
     <script src="assets/js/select2.min.js"></script>
@@ -1221,8 +1789,15 @@
                                     class="form-control" rows="2"></textarea></div>
                             <div class="mb-2"><label>Keterangan</label><input name="keterangan" id="inKetM"
                                     class="form-control"></div>
-                            <div class="mb-2"><label class="fw-bold">Upload Scan (PDF/IMG/DOC/ZIP Max
-                                    500KB)</label><input type="file" id="fileMasuk" class="form-control"></div>
+                            <div class="mb-2">
+                                <label class="fw-bold d-flex justify-content-between align-items-center">
+                                    Upload Scan (PDF/IMG/DOC/ZIP Max 500KB)
+                                    <button type="button" class="btn btn-sm btn-info text-white"
+                                        onclick="scanImageAndAutofill('fileMasuk', 'masuk')"><i
+                                            class="fas fa-magic"></i> Auto-Isi (OCR)</button>
+                                </label>
+                                <input type="file" id="fileMasuk" class="form-control" accept=".jpg,.jpeg,.png,.pdf">
+                            </div>
                         </div>
                         <div id="divKeluar" class="hide">
                             <div class="row mb-2">
@@ -1253,8 +1828,15 @@
                                     class="form-control" rows="2"></textarea></div>
                             <div class="mb-2"><label>Keterangan</label><input name="keterangan" id="inKetK"
                                     class="form-control"></div>
-                            <div class="mb-2"><label class="fw-bold">Upload File (PDF/IMG/DOC/ZIP Max
-                                    500KB)</label><input type="file" id="fileKeluar" class="form-control"></div>
+                            <div class="mb-2">
+                                <label class="fw-bold d-flex justify-content-between align-items-center">
+                                    Upload File (PDF/IMG/DOC/ZIP Max 500KB)
+                                    <button type="button" class="btn btn-sm btn-info text-white"
+                                        onclick="scanImageAndAutofill('fileKeluar', 'keluar')"><i
+                                            class="fas fa-magic"></i> Auto-Isi (OCR)</button>
+                                </label>
+                                <input type="file" id="fileKeluar" class="form-control" accept=".jpg,.jpeg,.png,.pdf">
+                            </div>
                         </div>
                         <button id="btnSimpan" class="btn btn-primary w-100 mt-3 fw-bold"><span>SIMPAN DATA</span><span
                                 class="spinner-border spinner-border-sm hide" role="status"></span></button>
@@ -1318,7 +1900,7 @@
     <input type="hidden" id="b64Logo2">
 
     <div class="modal fade" id="modalPrivasi" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Kebijakan Privasi</h5><button type="button" class="btn-close"
@@ -1383,6 +1965,8 @@
     <script src="assets/js/docxtemplater.js"></script>
     <script src="assets/js/pizzip.js"></script>
     <script src="assets/js/FileSaver.min.js"></script>
+    <script src="assets/js/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script src="data/kode_klasifikasi.js"></script>
     <!-- Dexie.js (selalu dimuat, tidak berdampak di Electron) -->
     <script src="assets/js/dexie.js"></script>
@@ -1393,9 +1977,9 @@
         if (isElectronApp) {
             // document.write berjalan synchronous, jadi config.js selesai sebelum script.js dimuat
             document.write('<script src="config.js"><\/script>');
-            document.write('<script src="script.js"><\/script>');
+            document.write('    <script src="script.js?v=2"><\/script>');
         } else {
-            document.write('<script src="script-online.js"><\/script>');
+            document.write('    <script src="script-online.js?v=2"><\/script>');
         }
     </script>
 
@@ -1422,7 +2006,9 @@
                             <input type="url" class="form-control" id="syncLinkExec" required
                                 placeholder="https://script.google.com/macros/s/.../exec">
                             <div class="form-text text-muted">Link ini akan otomatis tersimpan untuk sinkronisasi
-                                berikutnya.</div>
+                                berikutnya. Jika masih kosong, Silahkan salin dari kolom Tab Backup&Restore di Menu
+                                Settings.
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -1432,6 +2018,266 @@
                             class="fas fa-cloud-upload-alt me-2"></i>Proses Sinkronisasi</button>
                 </div>
             </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- MODAL IMPORT EXCEL KODE CUSTOM -->
+    <div class="modal fade" id="modalImportExcel" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-file-excel me-2"></i>Import Kode dari Excel</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info py-2 small">
+                        <i class="fas fa-info-circle me-1"></i> Pastikan format Excel Anda sesuai dengan template agar
+                        data dapat terbaca dengan benar.
+                    </div>
+                    <div class="text-center mb-4">
+                        <button class="btn btn-outline-success btn-sm fw-bold" onclick="downloadTemplateExcel()"><i
+                                class="fas fa-download me-1"></i> Unduh Template Excel</button>
+                    </div>
+                    <form id="fImportExcel">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Pilih File Excel (.xlsx) <span
+                                    class="text-danger">*</span></label>
+                            <input type="file" class="form-control" id="fileExcelImport" accept=".xlsx, .xls" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-success fw-bold" onclick="prosesImportExcel()"><i
+                            class="fas fa-upload me-2"></i>Proses Import</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL KIRIM SURAT (EKSTERNAL) -->
+    <div class="modal fade" id="modalKirimSurat" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white py-2">
+                    <h6 class="modal-title mb-0"><i class="fas fa-paper-plane me-2"></i>Form Pengiriman Surat</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <form id="fKirimSurat" onsubmit="submitSuratEksternal(event)">
+                    <div class="modal-body bg-light">
+                        <div class="alert alert-info border-info text-dark mb-3">
+                            <strong>Informasi:</strong> Ini merupakan formulir pengiriman surat digital kepada instansi
+                            kami. Silakan isi form di bawah ini dengan lengkap dan benar.
+                        </div>
+                        <div class="row g-2">
+                            <!-- Baris 1: Nama, Email, No HP (Masing-masing 1/3) -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small mb-1">Nama Pengirim <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" id="extNama" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small mb-1">Email Pengirim <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control form-control-sm" id="extEmail" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small mb-1">No HP/WA <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" id="extNoHp" required>
+                            </div>
+    
+                            <div class="col-12 my-1">
+                                <hr class="my-1">
+                            </div>
+    
+                            <!-- Baris 2: Lembaga, No Surat, Tgl Surat (Masing-masing 1/3) -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small mb-1">Lembaga Pengirim <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" id="extLembaga" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small mb-1">Nomor Surat <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" id="extNoSurat" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small mb-1">Tanggal Surat <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control form-control-sm" id="extTglSurat" required>
+                            </div>
+    
+                            <!-- Baris 3: Sifat Surat (1/3), Hal Surat (2/3) -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small mb-1">Sifat Surat <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" id="extSifatSurat" required>
+                                    <option value="">-- Pilih Sifat --</option>
+                                    <option value="Biasa">Biasa</option>
+                                    <option value="Penting">Penting</option>
+                                    <option value="Segera">Segera</option>
+                                    <option value="Rahasia">Rahasia</option>
+                                </select>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold small mb-1">Hal Surat <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" id="extHalSurat" required>
+                            </div>
+    
+                            <!-- Baris 4: Pejabat (1/3), Keterangan (2/3) -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small mb-1">Pejabat dituju <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" id="extTujuanSurat" required>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold small mb-1">Keterangan (Opsional)</label>
+                                <textarea class="form-control form-control-sm" id="extKeterangan" rows="1"></textarea>
+                            </div>
+    
+                            <!-- Baris 5: Upload -->
+                            <div class="col-md-12 mt-2">
+                                <label class="form-label fw-bold small mb-1">Upload File Surat (PDF/Gambar) <span class="text-danger">*</span></label>
+                                <input type="file" class="form-control form-control-sm" id="extFile" accept=".pdf,image/*" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-white">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-warning text-dark fw-bold" id="btnSubmitEksternal"><i
+                                class="fas fa-paper-plane me-2"></i> Kirim Surat<span
+                                class="spinner-border spinner-border-sm ms-2 hide"
+                                id="spinSubmitEksternal"></span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DETAIL SURAT EKSTERNAL (ADMIN) -->
+    <div class="modal fade" id="modalDetailEksternal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title"><i class="fas fa-eye me-2"></i>Detail Surat Masuk (Eksternal)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="row m-0">
+                        <div class="col-md-5 p-4 border-end">
+                            <h6 class="text-muted fw-bold mb-3 border-bottom pb-2">Informasi Pengirim</h6>
+                            <table class="table table-sm table-borderless small mb-4">
+                                <tr>
+                                    <td style="width:130px;">Nama Pengirim</td>
+                                    <td>: <span id="vExtNama" class="fw-bold text-dark"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Email</td>
+                                    <td>: <span id="vExtEmail"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>No HP/WA</td>
+                                    <td>: <span id="vExtNoHp"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Lembaga</td>
+                                    <td>: <span id="vExtLembaga"></span></td>
+                                </tr>
+                            </table>
+
+                            <h6 class="text-muted fw-bold mb-3 border-bottom pb-2">Informasi Surat</h6>
+                            <table class="table table-sm table-borderless small mb-0">
+                                <tr>
+                                    <td style="width:130px;">Nomor Surat</td>
+                                    <td>: <span id="vExtNoSurat" class="fw-bold text-dark"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Tanggal Surat</td>
+                                    <td>: <span id="vExtTglSurat"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Hal Surat</td>
+                                    <td>: <span id="vExtHalSurat"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Tujuan</td>
+                                    <td>: <span id="vExtTujuan"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Sifat</td>
+                                    <td>: <span id="vExtSifat"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>Keterangan</td>
+                                    <td>: <span id="vExtKeterangan"></span></td>
+                                </tr>
+                            </table>
+
+                            <div class="mt-4 pt-3 border-top">
+                                <label class="small fw-bold text-muted mb-2">Aksi Admin</label>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-success flex-grow-1 fw-bold" id="btnTerimaEksternal"><i
+                                            class="fas fa-check-circle me-1"></i> Diterima</button>
+                                    <button class="btn btn-danger flex-grow-1 fw-bold" id="btnTolakEksternal"><i
+                                            class="fas fa-times-circle me-1"></i> Ditolak</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-7 p-0 bg-light d-flex flex-column"
+                            style="min-height: 400px; max-height: 80vh;">
+                            <div class="p-2 bg-dark text-white text-center small fw-bold"><i
+                                    class="fas fa-file-alt me-1"></i>Preview Dokumen</div>
+                            <div id="vExtFileContainer"
+                                class="flex-grow-1 p-3 text-center overflow-auto d-flex align-items-center justify-content-center">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light py-2">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HIDDEN CONTAINER UNTUK BUKTI KIRIM (HTML2PDF) -->
+    <div id="printBuktiKirim"
+        style="position:fixed; top:-9999px; left:-9999px; display:block; background:white; padding:30px; width:700px; color:black; font-family:Arial, sans-serif;">
+        <div style="text-align:center; border-bottom:3px solid #333; padding-bottom:15px; margin-bottom:20px;">
+            <h3 style="margin:0; text-transform:uppercase;">BUKTI PENGIRIMAN SURAT</h3>
+            <h5 style="margin:5px 0 0 0; color:#555;" id="pkLembagaTujuan">SiDiMAS Instansi</h5>
+        </div>
+        <div style="margin-bottom:20px;">
+            <p style="margin:0 0 5px 0;"><strong>ID Pengiriman:</strong> <span id="pkId"></span></p>
+            <p style="margin:0 0 5px 0;"><strong>Waktu Kirim:</strong> <span id="pkWaktu"></span></p>
+            <p style="margin:0 0 5px 0;"><strong>Status:</strong> <span style="color:#e67e22; font-weight:bold;">PENDING
+                    (Menunggu Verifikasi)</span></p>
+        </div>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+            <tr>
+                <td style="width:30%; padding:8px; border:1px solid #ddd; background:#f9f9f9; font-weight:bold;">Nama
+                    Pengirim</td>
+                <td style="padding:8px; border:1px solid #ddd;" id="pkNama"></td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border:1px solid #ddd; background:#f9f9f9; font-weight:bold;">Lembaga Pengirim
+                </td>
+                <td style="padding:8px; border:1px solid #ddd;" id="pkLembaga"></td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border:1px solid #ddd; background:#f9f9f9; font-weight:bold;">Nomor Surat</td>
+                <td style="padding:8px; border:1px solid #ddd;" id="pkNoSurat"></td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border:1px solid #ddd; background:#f9f9f9; font-weight:bold;">Tanggal Surat</td>
+                <td style="padding:8px; border:1px solid #ddd;" id="pkTglSurat"></td>
+            </tr>
+            <tr>
+                <td style="padding:8px; border:1px solid #ddd; background:#f9f9f9; font-weight:bold;">Hal / Perihal</td>
+                <td style="padding:8px; border:1px solid #ddd;" id="pkHal"></td>
+            </tr>
+        </table>
+        <div style="background:#e8f4f8; padding:15px; border-left:4px solid #3498db; font-size:12px;">
+            <strong>Catatan:</strong> Surat Anda telah diterima oleh sistem dan sedang menunggu verifikasi dari Admin.
+            Silakan simpan tanda terima ini sebagai bukti pengiriman yang sah.
         </div>
     </div>
 
