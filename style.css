@@ -1,5 +1,7 @@
 :root {
     --main-color: #0d6efd;
+    --main-color2: #004085;
+    --main-color3: #001b3a;
 }
 
 body {
@@ -42,12 +44,42 @@ textarea {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    /* Fallback warna statis tanpa animasi agar tidak menyebabkan blank pada WebView APK */
+    /* Dihapus justify-content: center; agar tidak terpotong saat layar dizoom atau pendek */
     background: var(--main-color);
-    background: linear-gradient(135deg, var(--main-color) 0%, #004085 100%);
+    background: linear-gradient(135deg, var(--main-color) 0%, var(--main-color2) 50%, var(--main-color3) 100%);
     padding: 20px;
     overflow-y: auto;
+}
+
+/* Animasi Mengambang (Naik-Turun) untuk Logo dan Tombol */
+@keyframes floatUp {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+@keyframes floatDown {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+}
+.anim-float-up {
+    animation: floatUp 3s ease-in-out infinite;
+}
+.anim-float-down {
+    animation: floatDown 3s ease-in-out infinite;
+}
+
+@keyframes floatLeftBack {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-10px); }
+}
+@keyframes floatRightBack {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(10px); }
+}
+.anim-float-left-back {
+    animation: floatLeftBack 3s ease-in-out infinite;
+}
+.anim-float-right-back {
+    animation: floatRightBack 3s ease-in-out infinite;
 }
 
 @keyframes gradientBG {
@@ -66,66 +98,24 @@ textarea {
 
 /* WRAPPER UTAMA: Efek Kaca (Glassmorphism) tingkat tinggi */
 .login-wrapper {
-    display: flex;
     width: 100%;
-    max-width: 900px;
-    /* Mengganti background menjadi solid agar tidak memerlukan backdrop-filter yang berat */
-    background: rgba(255, 255, 255, 0.95);
+    max-width: 450px;
+    margin: auto; /* Ini membuat wrapper di tengah jika layar cukup besar, dan tidak terpotong jika layar kecil */
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 24px;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     overflow: hidden;
-    align-items: stretch;
+    position: relative;
+    padding: 10px;
 }
 
 .login-box {
-    padding: 45px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    flex: 1;
-    z-index: 2;
+    padding: 30px 20px;
     position: relative;
-}
-
-/* KOTAK KIRI: Warna pastel lembut, estetik, dan transparan */
-.login-box-left {
-    /* Gradien dari putih ke biru muda/ungu muda yang sangat soft */
-    background: linear-gradient(135deg, rgba(224, 234, 252, 0.75) 0%, rgba(207, 222, 243, 0.85) 100%);
-    border-right: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-/* Tambahan efek pendaran cahaya (Glow) di sudut kotak kiri biar cantik */
-.login-box-left::before {
-    content: '';
-    position: absolute;
-    top: -50px;
-    left: -50px;
-    width: 200px;
-    height: 200px;
-    background: rgba(13, 110, 253, 0.25);
-    border-radius: 50%;
-    filter: blur(40px);
-    z-index: -1;
-}
-
-.login-box-left::after {
-    content: '';
-    position: absolute;
-    bottom: -50px;
-    right: -50px;
-    width: 200px;
-    height: 200px;
-    background: rgba(102, 16, 242, 0.2);
-    border-radius: 50%;
-    filter: blur(40px);
-    z-index: -1;
-}
-
-/* KOTAK KANAN: Putih mengkilap agar form sangat jelas dibaca */
-.login-box-right {
-    background: rgba(255, 255, 255, 0.95);
+    z-index: 2;
 }
 
 /* Penyesuaian Teks & Logo agar serasi dengan background estetik */
@@ -151,7 +141,9 @@ textarea {
     font-size: 1.3rem;
     font-weight: 900;
     text-transform: uppercase;
-    color: var(--main-color);
+    background: linear-gradient(90deg, var(--main-color) 0%, var(--main-color2) 50%, var(--main-color3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     margin-bottom: 15px;
     text-shadow: 0 2px 4px rgba(13, 110, 253, 0.15);
 }
@@ -193,44 +185,14 @@ textarea {
 
 /* --- MEDIA QUERY KHUSUS HP --- */
 @media (max-width: 768px) {
-
-    /* Matikan efek kaca pembungkus utama di HP */
-    .login-wrapper {
-        background: transparent;
-        backdrop-filter: none;
-        border: none;
-        box-shadow: none;
-        overflow: visible;
-        flex-direction: column;
-        padding: 0;
-    }
-
-    .login-box {
-        border-radius: 24px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-        padding: 35px 20px;
-        min-height: 400px;
-    }
-
-    /* Di HP, kotak kiri warnanya solid pastel agar teks tetap terbaca bagus */
-    .login-box-left {
-        border-right: none;
-        background: linear-gradient(135deg, rgba(240, 245, 255, 0.98) 0%, rgba(225, 235, 250, 0.98) 100%);
-    }
-
-    /* Kotak kanan (Form Login) putih solid */
-    .login-box-right {
-        display: none;
-        background: #ffffff;
-    }
-
     .btn-mobile-next {
         display: block;
-        margin-top: 30px;
+        margin-top: 15px;
     }
 
     .btn-mobile-back {
         display: block;
+        color: #fff;
     }
 }
 
@@ -247,7 +209,7 @@ textarea {
     position: fixed;
     top: 0;
     left: 0;
-    background: var(--main-color);
+    background: linear-gradient(180deg, var(--main-color) 0%, var(--main-color2) 50%, var(--main-color3) 100%);
     color: white;
     padding-top: 20px;
     z-index: 1000;
@@ -259,7 +221,6 @@ textarea {
     margin-left: 250px;
     width: calc(100% - 250px);
     padding: 20px;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -331,7 +292,9 @@ textarea {
     font-size: 1.4rem;
     font-weight: 900;
     display: block;
-    color: var(--main-color);
+    background: linear-gradient(90deg, var(--main-color) 0%, var(--main-color2) 50%, var(--main-color3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     text-transform: uppercase;
     line-height: 1.2;
     margin: 5px 0;
@@ -351,7 +314,6 @@ textarea {
     color: #6c757d;
     border-top: 1px solid #dee2e6;
     background: white;
-    margin-top: auto;
 }
 
 #view-login .footer {
@@ -563,3 +525,5 @@ div:where(.swal2-container) {
         right: 15px !important;
     }
 }
+.format-radio-box { padding: 5px 10px; border: 1px solid transparent; border-radius: 6px; transition: all 0.2s; }
+.format-radio-box:has(input:checked) { background-color: #ffedd5; border-color: #fdba74; }
