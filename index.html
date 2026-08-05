@@ -3,8 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SiDiMAS</title>
     <link rel="icon" type="image/png" href="./icon.png">
 
@@ -45,15 +44,26 @@
     </div>
 
     <script>
-        let currentZoomLevel = 1.0;
+        let currentZoomLevel = 1.0; 
         function zoomApp(step) {
             if (step === 0) {
-                currentZoomLevel = 1.0;
+                currentZoomLevel = 1.0; 
             } else {
                 currentZoomLevel += step;
                 if (currentZoomLevel < 0.5) currentZoomLevel = 0.5;
-                if (currentZoomLevel > 1.5) currentZoomLevel = 1.5;
+                if (currentZoomLevel > 3.0) currentZoomLevel = 3.0;
             }
+            
+            try {
+                // Jika berjalan di Electron (Offline Desktop), gunakan Native Zoom agar kualitas dan skala terjaga
+                if (typeof require !== 'undefined') {
+                    const webFrame = require('electron').webFrame;
+                    webFrame.setZoomFactor(currentZoomLevel);
+                    return;
+                }
+            } catch (e) { console.warn("Native zoom gagal, menggunakan CSS zoom"); }
+
+            // Fallback untuk Browser biasa
             document.body.style.zoom = currentZoomLevel;
         }
     </script>
