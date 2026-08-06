@@ -1345,8 +1345,8 @@ function submitGenerate(e) {
 
                     let buildTtdXml = (withTanggal) => {
                         let ttdXml = '<w:tbl><w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:jc w:val="center"/><w:tblBorders><w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/></w:tblBorders></w:tblPr>';
-                        ttdXml += '<w:tblGrid><w:gridCol w:w="6000"/><w:gridCol w:w="4000"/></w:tblGrid>';
-                        ttdXml += '<w:tr><w:tc><w:tcPr><w:tcW w:w="3000" w:type="pct"/></w:tcPr><w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2000" w:type="pct"/></w:tcPr>';
+                        ttdXml += '<w:tblGrid><w:gridCol w:w="5500"/><w:gridCol w:w="4500"/></w:tblGrid>';
+                        ttdXml += '<w:tr><w:tc><w:tcPr><w:tcW w:w="2750" w:type="pct"/></w:tcPr><w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2250" w:type="pct"/></w:tcPr>';
 
                         if (withTanggal) {
                             ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">${safeTgl}</w:t></w:r></w:p>`;
@@ -1518,6 +1518,7 @@ function nav(p, el) {
     if (p === 'setting') {
         loadUserInfoPage();
         if (typeof loadKodeCustomTable === 'function') loadKodeCustomTable();
+        if (typeof loadUsers === 'function') loadUsers();
 
         // Hapus class active/show dari semua tab pane pengaturan agar tidak menyangkut (overlapping)
         $('#settingTabsContent .tab-pane').removeClass('show active');
@@ -1833,20 +1834,25 @@ function modalHelpdesk() {
 }
 
 function modalInstal() {
-    Swal.fire({
-        title: 'Instal Aplikasi',
-        html: `
-            <div class="d-grid gap-3 mt-3">
-                <a href="#" class="btn btn-success rounded-pill shadow-sm py-2 fw-bold"><i class="fab fa-android me-2"></i> Instal Android (APK)</a>
-                <a href="#" class="btn btn-primary rounded-pill shadow-sm py-2 fw-bold"><i class="fab fa-windows me-2"></i> Instal Windows (EXE)</a>
-                <button class="btn btn-dark rounded-pill shadow-sm py-2 fw-bold" onclick="Swal.fire('Info iOS', 'Untuk pengguna iPhone/iPad, silakan buka halaman ini di Safari, tekan tombol Share (Bagikan), lalu pilih Tambahkan ke Layar Utama (Add to Home Screen).', 'info')">
-                    <i class="fab fa-apple me-2"></i> Petunjuk Instal iOS
-                </button>
-            </div>
-        `,
-        showConfirmButton: false,
-        showCloseButton: true
-    });
+    if (deferredPrompt) {
+        showInstallPopup();
+    } else {
+        Swal.fire({
+            title: 'Instal Aplikasi',
+            html: `
+                <div class="d-grid gap-3 mt-3">
+                    <button class="btn btn-primary rounded-pill shadow-sm py-2 fw-bold" onclick="Swal.fire('Info PWA', 'Browser Anda mungkin tidak mendukung instalasi otomatis, atau aplikasi sudah terinstal. Anda bisa menginstalnya secara manual melalui menu browser (Add to Home Screen / Install App).', 'info')">
+                        <i class="fas fa-info-circle me-2"></i> Info Instalasi
+                    </button>
+                    <button class="btn btn-dark rounded-pill shadow-sm py-2 fw-bold" onclick="Swal.fire('Info iOS', 'Untuk pengguna iPhone/iPad, silakan buka halaman ini di Safari, tekan tombol Share (Bagikan), lalu pilih Tambahkan ke Layar Utama (Add to Home Screen).', 'info')">
+                        <i class="fab fa-apple me-2"></i> Petunjuk Instal iOS
+                    </button>
+                </div>
+            `,
+            showConfirmButton: false,
+            showCloseButton: true
+        });
+    }
 }
 
 
