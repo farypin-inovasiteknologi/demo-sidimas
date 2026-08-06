@@ -1513,9 +1513,14 @@ function nav(p, el) {
     if (p === 'setting') {
         loadUserInfoPage();
         if (typeof loadKodeCustomTable === 'function') loadKodeCustomTable();
+        
+        // Hapus class active/show dari semua tab pane pengaturan agar tidak menyangkut (overlapping)
+        $('#settingTabsContent .tab-pane').removeClass('show active');
+
         // Aktifkan ulang tab pertama (Pengaturan Sistem) secara paksa
         const triggerEl = document.querySelector('#sistem-tab');
         if (triggerEl) {
+            $('#sistem').addClass('show active');
             const tab = bootstrap.Tab.getOrCreateInstance(triggerEl);
             tab.show();
         }
@@ -1925,7 +1930,8 @@ async function simpanKodeCustom(e) {
 
     try {
         if (API_URL) {
-            await apiCall('saveKodeCustom', { id: id, kode: kode, uraian: uraian });
+            const res = await apiCall('saveKodeCustom', { id: id, kode: kode, uraian: uraian });
+            if (res && !res.success) throw new Error(res.message || "Gagal menyimpan ke server");
         }
         await localDB.kodeCustom.put({ id: id, kode: kode, uraian: uraian });
         $('#kc_id').val('');
@@ -1953,7 +1959,8 @@ async function hapusKodeCustom(id) {
         if (result.isConfirmed) {
             try {
                 if (API_URL) {
-                    await apiCall('deleteKodeCustom', { id: id });
+                    const res = await apiCall('deleteKodeCustom', { id: id });
+                    if (res && !res.success) throw new Error(res.message || "Gagal menghapus di server");
                 }
                 await localDB.kodeCustom.delete(id);
                 loadKodeCustomTable();
