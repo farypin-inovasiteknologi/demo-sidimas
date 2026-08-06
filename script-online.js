@@ -1484,11 +1484,11 @@ function nav(p, el) {
     $('.page-view').addClass('hide'); $('#page-' + p).removeClass('hide');
 
     /* Bagian yang diubah: Reset active class untuk desktop dan mobile */
-    $('.nav-link, .nav-item-mobile').removeClass('active');
+    $('.sidebar .nav-link, .nav-item-mobile').removeClass('active');
     if (el) {
         $(el).addClass('active');
     } else {
-        $(`.nav-link[onclick="nav('${p}', this)"]`).addClass('active');
+        $(`.sidebar .nav-link[onclick="nav('${p}', this)"]`).addClass('active');
         $(`.nav-item-mobile[onclick="nav('${p}', this)"]`).addClass('active');
     }
 
