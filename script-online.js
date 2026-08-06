@@ -8,7 +8,7 @@ const DAFTAR_BACKEND = {
     "smkn1kotaternate": "https://script.google.com/a/macros/admin.sma.belajar.id/s/AKfycbyneiV8N_dRWSRy-xtw9q_7nE2dHnXHGzCaGFgiCzNT4DA8NM9TfX3_3Ro2u-Dt9NFP/exec",
     "sman9kotajambi": "https://script.google.com/macros/s/AKfycbzUVafWd_gjf01KnoIZOrMq4ECgsKrt2XlP5qj2p_YJgUr7_mFyuheGxYqECQGgT6zW/exec",
     "sman6tanjungjabungbarat": "https://script.google.com/macros/s/AKfycbzRhyVACgeQrfunoYn44PW77IFakBiI2DR6-VBalwpgzYlhzDe94LXMR8pBpjqoPGlGsQ/exec",
-    "demo": "https://script.google.com/macros/s/AKfycbyCZTWQINEYmSnTsaghCY5O80VOJvhXpHw8eYYrRrMgmoAjGCwnGNPXHir5hP2P2k9q/exec"
+    "demo": "https://script.google.com/macros/s/AKfycbwmjBKvzk4JNJyQvAcnJ8-htm7NlcpoY8XbRT2SC_fh6a0jNzamXRDafKIzM_a8atIk/exec"
 };
 
 let API_URL = "";
@@ -730,13 +730,13 @@ function updatePreview() {
 }
 function updateTanggalSurat() { if ($('#inpTglSurat').val()) { const tgl = new Date($('#inpTglSurat').val()).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); const kota = $('#inpTempatTitimangsa').val() || "Tempat"; $('#tanggalSuratFull').val(kota + ", " + tgl); } }
 function updateTanggalSaja() { const v = $('#inpTglSaja').val(); if (v) { const d = new Date(v); $('#valHariSaja').val(d.toLocaleDateString('id-ID', { weekday: 'long' })); $('#valTglSaja').val(d.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })); } }
-function updateHariAcara() { 
-    const v = $('#inpTglAcara').val(); 
-    const v2 = $('#inpTglAcaraSelesai').val(); 
-    if (v) { 
-        $('#valHariAcara').val(formatHariRentangIndo(v, v2)); 
-        $('#valTglAcaraIndo').val(formatRentangTglIndo(v, v2)); 
-    } 
+function updateHariAcara() {
+    const v = $('#inpTglAcara').val();
+    const v2 = $('#inpTglAcaraSelesai').val();
+    if (v) {
+        $('#valHariAcara').val(formatHariRentangIndo(v, v2));
+        $('#valTglAcaraIndo').val(formatRentangTglIndo(v, v2));
+    }
 }
 
 
@@ -1515,7 +1515,7 @@ function nav(p, el) {
     if (p === 'setting') {
         loadUserInfoPage();
         if (typeof loadKodeCustomTable === 'function') loadKodeCustomTable();
-        
+
         // Hapus class active/show dari semua tab pane pengaturan agar tidak menyangkut (overlapping)
         $('#settingTabsContent .tab-pane').removeClass('show active');
 
