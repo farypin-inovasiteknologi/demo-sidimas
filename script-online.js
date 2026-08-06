@@ -1516,7 +1516,7 @@ function nav(p, el) {
 
     // FIX: Reset tab Bootstrap di halaman Pengaturan agar tidak perlu klik 2x
     if (p === 'setting') {
-        loadUserInfoPage();
+        if (typeof loadUserInfoPage === 'function') loadUserInfoPage();
         if (typeof loadKodeCustomTable === 'function') loadKodeCustomTable();
         if (typeof loadUsers === 'function') loadUsers();
 
