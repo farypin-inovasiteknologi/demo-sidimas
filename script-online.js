@@ -48,6 +48,23 @@ function showInvalidTenantError() {
 }
 
 /* --- FUNGSI JEMBATAN PENGHUBUNG (FETCH API) --- */
+function downloadBase64File(dataUri) {
+    try {
+        const arr = dataUri.split(',');
+        const mimeMatch = arr[0].match(/:(.*?);/);
+        const mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+        let ext = mime.split('/')[1] || 'bin';
+        if (mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') ext = 'docx';
+        else if (mime === 'application/pdf') ext = 'pdf';
+        const link = document.createElement('a');
+        link.href = dataUri;
+        link.download = "Dokumen_Surat." + ext;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (e) { console.error("Gagal download:", e); }
+}
+
 async function apiCall(actionName, payloadData = {}) {
     try {
         const response = await fetch(API_URL, {
@@ -303,6 +320,7 @@ function renderAppAttributes(s) {
 
     $('#inInstansi').val(s.nama_instansi); $('#inOpd').val(s.nama_opd); $('#inSekolah').val(s.nama_sekolah);
     $('#inAlamat').val(s.alamat_sekolah); $('#inEmail').val(s.email_sekolah); $('#inWeb').val(s.website_sekolah);
+    $('#inTelp').val(s.telp_sekolah); $('#inWaAdmin').val(s.wa_admin);
     $('#inWarna').val(s.app_color || '#0d6efd'); $('#inWarna2').val(s.app_color2 || '#004085'); $('#inWarna3').val(s.app_color3 || '#001b3a');
     $('#inKepsekNama').val(s.kepsek_nama); $('#inKepsekNip').val(s.kepsek_nip);
     $('#inKepsekPangkat').val(s.kepsek_pangkat); $('#inKotaSurat').val(s.kota_surat); $('#inKodeLembaga').val(s.kode_lembaga);
@@ -657,6 +675,34 @@ function gantiFormSurat() {
         $('#box-tembusan').addClass('hide').find('textarea').prop('disabled', true);
     }
 
+    // Auto-fill Kode Klasifikasi
+    let keywords = '';
+    if (t.includes('undangan')) keywords = 'undangan';
+    else if (t.includes('keputusan') || t.includes('sk')) keywords = 'keputusan';
+    else if (t.includes('perjalanan') || t.includes('sppd')) keywords = 'perjalanan';
+    else if (t.includes('tugas') || t.includes('spt')) keywords = 'tugas';
+    else if (t.includes('keterangan') || t.includes('suket')) keywords = 'keterangan';
+    else if (t.includes('izin')) keywords = 'izin';
+    else if (t.includes('nota')) keywords = 'nota';
+    else if (t.includes('pengantar')) keywords = 'pengantar';
+
+    if (keywords) {
+        let found = false;
+        $('#selKodeArsip option').each(function () {
+            if ($(this).text().toLowerCase().includes(keywords)) {
+                $('#selKodeArsip').val($(this).val()).trigger('change');
+                found = true;
+                return false;
+            }
+        });
+        if (!found) $('#selKodeArsip').val('').trigger('change');
+    } else {
+        $('#selKodeArsip').val('').trigger('change');
+    }
+
+    toggleModeSpt();
+    toggleModeSuket();
+    toggleModeSis();
 
     loadAutoNumber();
 }
@@ -682,7 +728,14 @@ function updatePreview() {
 }
 function updateTanggalSurat() { if ($('#inpTglSurat').val()) { const tgl = new Date($('#inpTglSurat').val()).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }); const kota = $('#inpTempatTitimangsa').val() || "Tempat"; $('#tanggalSuratFull').val(kota + ", " + tgl); } }
 function updateTanggalSaja() { const v = $('#inpTglSaja').val(); if (v) { const d = new Date(v); $('#valHariSaja').val(d.toLocaleDateString('id-ID', { weekday: 'long' })); $('#valTglSaja').val(d.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })); } }
-function updateHariAcara() { const v = $('#inpTglAcara').val(); if (v) { const d = new Date(v); $('#valHariAcara').val(d.toLocaleDateString('id-ID', { weekday: 'long' })); $('#valTglAcaraIndo').val(d.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })); } }
+function updateHariAcara() { 
+    const v = $('#inpTglAcara').val(); 
+    const v2 = $('#inpTglAcaraSelesai').val(); 
+    if (v) { 
+        $('#valHariAcara').val(formatHariRentangIndo(v, v2)); 
+        $('#valTglAcaraIndo').val(formatRentangTglIndo(v, v2)); 
+    } 
+}
 
 
 function formatTglIndo(rawDate) {
@@ -734,16 +787,38 @@ function formatRentangTglIndo(tglMulai, tglSelesai) {
     const tahunSelesai = dSelesai.getFullYear();
 
     if (tahunMulai === tahunSelesai && bulanMulai === bulanSelesai) {
-        // Bulan & tahun sama: '6-9 Juli 2026'
+        // Bulan & tahun sama: '6 s.d. 9 Juli 2026'
         const tgl1 = dMulai.toLocaleDateString('id-ID', optsHari);
         const tgl2 = dSelesai.toLocaleDateString('id-ID', optsHari);
         const bln = dMulai.toLocaleDateString('id-ID', optsBln);
         const thn = dMulai.toLocaleDateString('id-ID', optsThn);
-        return `${tgl1}-${tgl2} ${bln} ${thn}`;
+        return `${tgl1} s.d. ${tgl2} ${bln} ${thn}`;
     } else {
-        // Beda bulan atau tahun: '6 Juli - 9 Agustus 2026'
-        return `${dMulai.toLocaleDateString('id-ID', optsLengkap)} - ${dSelesai.toLocaleDateString('id-ID', optsLengkap)}`;
+        // Beda bulan atau tahun: '6 Juli s.d. 9 Agustus 2026'
+        return `${dMulai.toLocaleDateString('id-ID', optsLengkap)} s.d. ${dSelesai.toLocaleDateString('id-ID', optsLengkap)}`;
     }
+}
+
+/**
+ * Menghasilkan format rentang hari Indonesia.
+ * - 1 hari  : 'Selasa'
+ * - Beda hari: 'Selasa s.d. Kamis'
+ */
+function formatHariRentangIndo(tglMulai, tglSelesai) {
+    if (!tglMulai) return '';
+    const dMulai = new Date(tglMulai + 'T00:00:00');
+    if (isNaN(dMulai)) return '';
+    const h1 = dMulai.toLocaleDateString('id-ID', { weekday: 'long' });
+
+    if (!tglSelesai || tglSelesai === tglMulai) {
+        return h1;
+    }
+
+    const dSelesai = new Date(tglSelesai + 'T00:00:00');
+    if (isNaN(dSelesai)) return h1;
+    const h2 = dSelesai.toLocaleDateString('id-ID', { weekday: 'long' });
+
+    return `${h1} s.d. ${h2}`;
 }
 
 /* ── INJEKSI KOP SURAT OFFLINE (Tanpa library, murni DOCX XML) ── */
@@ -952,6 +1027,7 @@ function submitGenerate(e) {
             tags['TTD_NIP'] = isAn ? (dataObj.anNip || '') : (dataObj.ttdNip || s.kepsek_nip || '');
             tags['TTD_PANGKAT'] = isAn ? (dataObj.anPangkat || '') : (dataObj.ttdPangkat || s.kepsek_pangkat || '');
             tags['TTD_DINAMIS'] = '###TTD_DINAMIS###';
+            tags['TTD_DINAMIS_TANGGAL'] = '###TTD_DINAMIS_TANGGAL###';
             tags['QR_TTE'] = '';
 
             tags['TEMBUSAN'] = dataObj.tembusanSurat || '';
@@ -959,6 +1035,8 @@ function submitGenerate(e) {
             // ── TAG SURAT UNDANGAN / ACARA ──
             tags['HARI_ACARA'] = dataObj.hariAcara || '';
             tags['TANGGAL_ACARA'] = dataObj.tglAcaraIndo || '';
+            tags['HARI_ACARA_RENTANG'] = formatHariRentangIndo(dataObj.undanganTglMulai, dataObj.undanganTglSelesai);
+            tags['TANGGAL_ACARA_RENTANG'] = formatRentangTglIndo(dataObj.undanganTglMulai, dataObj.undanganTglSelesai);
             tags['WAKTU_ACARA'] = dataObj.waktuAcara || '';
             tags['TEMPAT_ACARA'] = dataObj.tempatAcara || '';
             tags['ACARA_DETAIL'] = dataObj.acaraDetail || '';
@@ -987,6 +1065,7 @@ function submitGenerate(e) {
             tags['SPPD_TGL_MULAI'] = formatTglIndo(dataObj.sppdTglMulai);
             tags['SPPD_TGL_SELESAI'] = formatTglIndo(dataObj.sppdTglSelesai);
             tags['SPPD_TGL_RENTANG'] = formatRentangTglIndo(dataObj.sppdTglMulai, dataObj.sppdTglSelesai);
+            tags['SPPD_HARI_RENTANG'] = formatHariRentangIndo(dataObj.sppdTglMulai, dataObj.sppdTglSelesai);
             tags['SPPD_HARI_MULAI'] = formatHariIndo(dataObj.sppdTglMulai);
             tags['SPPD_HARI_SELESAI'] = formatHariIndo(dataObj.sppdTglSelesai);
             tags['SPPD_LAMA'] = dataObj.sppdLama || '';
@@ -1005,6 +1084,7 @@ function submitGenerate(e) {
             tags['SPT_HARI'] = formatHariIndo(dataObj.sptMulai);
             tags['SPT_TANGGAL'] = formatTglIndo(dataObj.sptMulai);
             tags['SPT_TGL_RENTANG'] = formatRentangTglIndo(dataObj.sptMulai, dataObj.sptSelesai);
+            tags['SPT_HARI_RENTANG'] = formatHariRentangIndo(dataObj.sptMulai, dataObj.sptSelesai);
             tags['SPT_HARI_SELESAI'] = formatHariIndo(dataObj.sptSelesai);
             tags['SPT_TANGGAL_SELESAI'] = formatTglIndo(dataObj.sptSelesai);
             tags['SPT_TEMPAT'] = dataObj.sptTempat || '';
@@ -1015,6 +1095,7 @@ function submitGenerate(e) {
             tags['IZIN_TGL_MULAI'] = formatTglIndo(dataObj.sppdTglMulai);
             tags['IZIN_TGL_SELESAI'] = formatTglIndo(dataObj.sppdTglSelesai);
             tags['IZIN_TGL_RENTANG'] = formatRentangTglIndo(dataObj.sppdTglMulai, dataObj.sppdTglSelesai);
+            tags['IZIN_HARI_RENTANG'] = formatHariRentangIndo(dataObj.sppdTglMulai, dataObj.sppdTglSelesai);
             tags['IZIN_HARI_MULAI'] = formatHariIndo(dataObj.sppdTglMulai);
 
             // ── TAG SURAT PERNYATAAN (SPMT) ──
@@ -1022,6 +1103,7 @@ function submitGenerate(e) {
             tags['SPMT_TGL_MULAI'] = formatTglIndo(dataObj.spmtTglMulai);
             tags['SPMT_TGL_SELESAI'] = formatTglIndo(dataObj.spmtTglSelesai);
             tags['SPMT_TGL_RENTANG'] = formatRentangTglIndo(dataObj.spmtTglMulai, dataObj.spmtTglSelesai);
+            tags['SPMT_HARI_RENTANG'] = formatHariRentangIndo(dataObj.spmtTglMulai, dataObj.spmtTglSelesai);
             tags['SPMT_HARI_MULAI'] = formatHariIndo(dataObj.spmtTglMulai);
 
             // Tag-tag tambahan lain (pastikan tidak ada yang terlewat dari form)
@@ -1042,7 +1124,7 @@ function submitGenerate(e) {
             let xmlKolektif = '';
 
             function buildXmlTabelKolektif(headers, rows, widths) {
-                let xml = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/><w:tblBorders>';
+                let xml = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/><w:jc w:val="center"/><w:tblBorders>';
                 xml += '<w:top w:val="single" w:sz="4" w:space="0" w:color="000000"/>';
                 xml += '<w:left w:val="single" w:sz="4" w:space="0" w:color="000000"/>';
                 xml += '<w:bottom w:val="single" w:sz="4" w:space="0" w:color="000000"/>';
@@ -1080,27 +1162,35 @@ function submitGenerate(e) {
                 return xml;
             }
 
+            // Helper: baca data kolektif langsung dari tabel DOM (lebih andal daripada FormData)
+            function readKolektifFromTable(tableId, colNames) {
+                let result = {};
+                colNames.forEach(col => result[col] = []);
+                $(`#${tableId} tbody tr`).each(function () {
+                    let cells = $(this).find('input, select');
+                    colNames.forEach((col, i) => {
+                        result[col].push($(cells[i]).val() || '');
+                    });
+                });
+                return result;
+            }
+
             if (templateName === '6. Surat Tugas (ST).docx') {
                 let modeSpt = dataObj.modeSpt || 'sendirian';
                 tags['isSendirian'] = modeSpt === 'sendirian';
                 tags['isKolektif'] = modeSpt === 'kolektif';
                 tags['isLampiran'] = modeSpt === 'lampiran';
 
-                if (modeSpt === 'kolektif' && dataObj['kolSptNama[]']) {
+                if (modeSpt === 'kolektif') {
                     tags['tabelKolektif'] = '{TABEL_KOLEKTIF}';
-                    let nams = Array.isArray(dataObj['kolSptNama[]']) ? dataObj['kolSptNama[]'] : [dataObj['kolSptNama[]']];
-                    let nips = Array.isArray(dataObj['kolSptNip[]']) ? dataObj['kolSptNip[]'] : [dataObj['kolSptNip[]']];
-                    let pangkats = Array.isArray(dataObj['kolSptPangkat[]']) ? dataObj['kolSptPangkat[]'] : [dataObj['kolSptPangkat[]']];
-                    let jabatans = Array.isArray(dataObj['kolSptJabatan[]']) ? dataObj['kolSptJabatan[]'] : [dataObj['kolSptJabatan[]']];
-                    let kets = Array.isArray(dataObj['kolSptKet[]']) ? dataObj['kolSptKet[]'] : [dataObj['kolSptKet[]']];
-
+                    const kData = readKolektifFromTable('tblSptKolektif', ['nama', 'nip', 'pangkat', 'jabatan', 'ket']);
                     let headers = ['No', 'Nama Pegawai<br/>NIP', 'Pangkat / Gol', 'Jabatan', 'Keterangan'];
                     let widths = [300, 1800, 1000, 1100, 800];
                     let rows = [];
-                    for (let i = 0; i < nams.length; i++) {
-                        rows.push([i + 1, (nams[i] || '-') + '<br/>' + (nips[i] || '-'), pangkats[i] || '-', jabatans[i] || '-', kets[i] || '-']);
+                    for (let i = 0; i < kData.nama.length; i++) {
+                        rows.push([i + 1, (kData.nama[i] || '-') + '<br/>' + (kData.nip[i] || '-'), kData.pangkat[i] || '-', kData.jabatan[i] || '-', kData.ket[i] || '-']);
                     }
-                    xmlKolektif = buildXmlTabelKolektif(headers, rows, widths);
+                    if (rows.length > 0) xmlKolektif = buildXmlTabelKolektif(headers, rows, widths);
                 }
             } else if (templateName === '4. Surat Keterangan.docx') {
                 let modeSuket = dataObj.modeSuket || 'sendirian';
@@ -1108,21 +1198,16 @@ function submitGenerate(e) {
                 tags['isKolektif'] = modeSuket === 'kolektif';
                 tags['isLampiran'] = modeSuket === 'lampiran';
 
-                if (modeSuket === 'kolektif' && dataObj['kolSuketNama[]']) {
+                if (modeSuket === 'kolektif') {
                     tags['tabelKolektif'] = '{TABEL_KOLEKTIF}';
-                    let nams = Array.isArray(dataObj['kolSuketNama[]']) ? dataObj['kolSuketNama[]'] : [dataObj['kolSuketNama[]']];
-                    let nips = Array.isArray(dataObj['kolSuketNip[]']) ? dataObj['kolSuketNip[]'] : [dataObj['kolSuketNip[]']];
-                    let pangkats = Array.isArray(dataObj['kolSuketPangkat[]']) ? dataObj['kolSuketPangkat[]'] : [dataObj['kolSuketPangkat[]']];
-                    let jabatans = Array.isArray(dataObj['kolSuketJabatan[]']) ? dataObj['kolSuketJabatan[]'] : [dataObj['kolSuketJabatan[]']];
-                    let kets = Array.isArray(dataObj['kolSuketKet[]']) ? dataObj['kolSuketKet[]'] : [dataObj['kolSuketKet[]']];
-
+                    const kData = readKolektifFromTable('tblSuketKolektif', ['nama', 'nip', 'pangkat', 'jabatan', 'ket']);
                     let headers = ['No', 'Nama Pegawai<br/>NIP', 'Pangkat / Gol', 'Jabatan', 'Keterangan'];
                     let widths = [300, 1800, 1000, 1100, 800];
                     let rows = [];
-                    for (let i = 0; i < nams.length; i++) {
-                        rows.push([i + 1, (nams[i] || '-') + '<br/>' + (nips[i] || '-'), pangkats[i] || '-', jabatans[i] || '-', kets[i] || '-']);
+                    for (let i = 0; i < kData.nama.length; i++) {
+                        rows.push([i + 1, (kData.nama[i] || '-') + '<br/>' + (kData.nip[i] || '-'), kData.pangkat[i] || '-', kData.jabatan[i] || '-', kData.ket[i] || '-']);
                     }
-                    xmlKolektif = buildXmlTabelKolektif(headers, rows, widths);
+                    if (rows.length > 0) xmlKolektif = buildXmlTabelKolektif(headers, rows, widths);
                 }
             } else if (templateName === '7. Surat Keterangan Siswa.docx') {
                 let modeSis = dataObj.modeSis || 'sendirian';
@@ -1130,23 +1215,16 @@ function submitGenerate(e) {
                 tags['isKolektif'] = modeSis === 'kolektif';
                 tags['isLampiran'] = modeSis === 'lampiran';
 
-                if (modeSis === 'kolektif' && dataObj['kolSisNama[]']) {
+                if (modeSis === 'kolektif') {
                     tags['tabelKolektif'] = '{TABEL_KOLEKTIF}';
-                    let nams = Array.isArray(dataObj['kolSisNama[]']) ? dataObj['kolSisNama[]'] : [dataObj['kolSisNama[]']];
-                    let nises = Array.isArray(dataObj['kolSisNis[]']) ? dataObj['kolSisNis[]'] : [dataObj['kolSisNis[]']];
-                    let ttls = Array.isArray(dataObj['kolSisTtl[]']) ? dataObj['kolSisTtl[]'] : [dataObj['kolSisTtl[]']];
-                    let jks = Array.isArray(dataObj['kolSisJk[]']) ? dataObj['kolSisJk[]'] : [dataObj['kolSisJk[]']];
-                    let kelas = Array.isArray(dataObj['kolSisKelas[]']) ? dataObj['kolSisKelas[]'] : [dataObj['kolSisKelas[]']];
-                    let ortus = Array.isArray(dataObj['kolSisOrtu[]']) ? dataObj['kolSisOrtu[]'] : [dataObj['kolSisOrtu[]']];
-                    let kets = Array.isArray(dataObj['kolSisKet[]']) ? dataObj['kolSisKet[]'] : [dataObj['kolSisKet[]']];
-
+                    const kData = readKolektifFromTable('tblSisKolektif', ['nama', 'nis', 'ttl', 'jk', 'kelas', 'ortu', 'ket']);
                     let headers = ['No', 'Nama Siswa<br/>NIS/NISN', 'Tempat, Tanggal Lahir', 'JK', 'Kelas', 'Nama Ortu', 'Keterangan'];
                     let widths = [250, 1250, 1000, 400, 500, 800, 800];
                     let rows = [];
-                    for (let i = 0; i < nams.length; i++) {
-                        rows.push([i + 1, (nams[i] || '-') + '<br/>' + (nises[i] || '-'), ttls[i] || '-', jks[i] || '-', kelas[i] || '-', ortus[i] || '-', kets[i] || '-']);
+                    for (let i = 0; i < kData.nama.length; i++) {
+                        rows.push([i + 1, (kData.nama[i] || '-') + '<br/>' + (kData.nis[i] || '-'), kData.ttl[i] || '-', kData.jk[i] || '-', kData.kelas[i] || '-', kData.ortu[i] || '-', kData.ket[i] || '-']);
                     }
-                    xmlKolektif = buildXmlTabelKolektif(headers, rows, widths);
+                    if (rows.length > 0) xmlKolektif = buildXmlTabelKolektif(headers, rows, widths);
                 }
             }
 
@@ -1186,7 +1264,7 @@ function submitGenerate(e) {
             if (dataObj.dataTabelLampiran) {
                 try {
                     const tabelData = JSON.parse(dataObj.dataTabelLampiran);
-                    let tblXml = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/><w:tblBorders>';
+                    let tblXml = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/><w:jc w:val="center"/><w:tblBorders>';
                     tblXml += '<w:top w:val="single" w:sz="4" w:space="0" w:color="000000"/>';
                     tblXml += '<w:left w:val="single" w:sz="4" w:space="0" w:color="000000"/>';
                     tblXml += '<w:bottom w:val="single" w:sz="4" w:space="0" w:color="000000"/>';
@@ -1252,34 +1330,45 @@ function submitGenerate(e) {
             }
 
             // 3. Injeksi Tanda Tangan Dinamis
-            if (finalXmlDoc.includes('###TTD_DINAMIS###')) {
+            if (finalXmlDoc.includes('###TTD_DINAMIS###') || finalXmlDoc.includes('###TTD_DINAMIS_TANGGAL###')) {
                 try {
-                    let ttdXml = '<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/><w:tblBorders><w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/></w:tblBorders></w:tblPr>';
-                    ttdXml += '<w:tblGrid><w:gridCol w:w="6000"/><w:gridCol w:w="4000"/></w:tblGrid>';
-                    ttdXml += '<w:tr><w:tc><w:tcPr><w:tcW w:w="3000" w:type="pct"/></w:tcPr><w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2000" w:type="pct"/></w:tcPr>';
-
                     const safeTgl = ($('#tanggalSuratFull').val() || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                     const safeNama = (isAn ? (dataObj.anNama || '') : (dataObj.ttdNama || s.kepsek_nama || '')).toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                     const safePangkat = (isAn ? (dataObj.anPangkat || '') : (dataObj.ttdPangkat || s.kepsek_pangkat || '')).toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                     const safeNip = (isAn ? (dataObj.anNip || '') : (dataObj.ttdNip || s.kepsek_nip || '')).toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                     const safeJabatanAn = (dataObj.anJabatan || '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-                    ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">${safeTgl}</w:t></w:r></w:p>`;
+                    let buildTtdXml = (withTanggal) => {
+                        let ttdXml = '<w:tbl><w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:jc w:val="center"/><w:tblBorders><w:top w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:left w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:bottom w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:right w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:insideH w:val="none" w:sz="0" w:space="0" w:color="auto"/><w:insideV w:val="none" w:sz="0" w:space="0" w:color="auto"/></w:tblBorders></w:tblPr>';
+                        ttdXml += '<w:tblGrid><w:gridCol w:w="6000"/><w:gridCol w:w="4000"/></w:tblGrid>';
+                        ttdXml += '<w:tr><w:tc><w:tcPr><w:tcW w:w="3000" w:type="pct"/></w:tcPr><w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p></w:tc><w:tc><w:tcPr><w:tcW w:w="2000" w:type="pct"/></w:tcPr>';
 
-                    if (isAn) {
-                        ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">a.n. Kepala Sekolah,</w:t></w:r></w:p>`;
-                        ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">${safeJabatanAn}</w:t></w:r></w:p>`;
-                    } else {
-                        ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">Kepala Sekolah,</w:t></w:r></w:p>`;
+                        if (withTanggal) {
+                            ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">${safeTgl}</w:t></w:r></w:p>`;
+                        }
+
+                        if (isAn) {
+                            ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">a.n. Kepala Sekolah,</w:t></w:r></w:p>`;
+                            ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">${safeJabatanAn}</w:t></w:r></w:p>`;
+                        } else {
+                            ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">Kepala Sekolah,</w:t></w:r></w:p>`;
+                        }
+
+                        ttdXml += `<w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p><w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p><w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p>`;
+                        ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:b/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">${safeNama}</w:t></w:r></w:p>`;
+                        ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">${safePangkat}</w:t></w:r></w:p>`;
+                        ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">NIP. ${safeNip}</w:t></w:r></w:p>`;
+
+                        ttdXml += '</w:tc></w:tr></w:tbl>';
+                        return ttdXml;
+                    };
+
+                    if (finalXmlDoc.includes('###TTD_DINAMIS###')) {
+                        finalXmlDoc = replaceParagraph(finalXmlDoc, '###TTD_DINAMIS###', buildTtdXml(false));
                     }
-
-                    ttdXml += `<w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p><w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p><w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p>`;
-                    ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:b/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">${safeNama}</w:t></w:r></w:p>`;
-                    ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">${safePangkat}</w:t></w:r></w:p>`;
-                    ttdXml += `<w:p><w:pPr><w:jc w:val="left"/><w:spacing w:after="0"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">NIP. ${safeNip}</w:t></w:r></w:p>`;
-
-                    ttdXml += '</w:tc></w:tr></w:tbl>';
-                    finalXmlDoc = replaceParagraph(finalXmlDoc, '###TTD_DINAMIS###', ttdXml);
+                    if (finalXmlDoc.includes('###TTD_DINAMIS_TANGGAL###')) {
+                        finalXmlDoc = replaceParagraph(finalXmlDoc, '###TTD_DINAMIS_TANGGAL###', buildTtdXml(true));
+                    }
                 } catch (e) { }
             }
 
@@ -1408,9 +1497,12 @@ function nav(p, el) {
     if (p === 'agenda') {
         refreshTable('masuk');
         refreshTable('keluar');
+        $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+            $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+        });
         const triggerEl = document.querySelector('#masuk-tab');
         if (triggerEl) {
-            const tab = new bootstrap.Tab(triggerEl);
+            const tab = bootstrap.Tab.getOrCreateInstance(triggerEl);
             tab.show();
         }
     }
@@ -1419,11 +1511,12 @@ function nav(p, el) {
 
     // FIX: Reset tab Bootstrap di halaman Pengaturan agar tidak perlu klik 2x
     if (p === 'setting') {
-        loadUsers();
+        loadUserInfoPage();
         if (typeof loadKodeCustomTable === 'function') loadKodeCustomTable();
+        // Aktifkan ulang tab pertama (Pengaturan Sistem) secara paksa
         const triggerEl = document.querySelector('#sistem-tab');
         if (triggerEl) {
-            const tab = new bootstrap.Tab(triggerEl);
+            const tab = bootstrap.Tab.getOrCreateInstance(triggerEl);
             tab.show();
         }
     }
@@ -1515,7 +1608,7 @@ function renderAksi(index, jenis) {
     const currentUser = localStorage.getItem('sidimas_user');
     const currentRole = localStorage.getItem('sidimas_role') || 'admin';
     const isAdmin = (currentRole === 'admin' || currentRole === 'Admin');
-    const creator = row[row.length - 1];
+    const creator = row[row.length - 2];
 
     // Jika bukan Admin dan surat ini dibuat oleh orang lain
     const isLocked = !isAdmin && creator && creator !== currentUser;
@@ -1708,13 +1801,18 @@ function modalPrivasi() { new bootstrap.Modal(document.getElementById('modalPriv
 function modalHelpdesk() {
     let email = $('#txtEmail').text() || "info@sekolah.sch.id";
     let web = $('#txtWeb').text() || "www.sekolah.sch.id";
+    let telp = $('#inTelp').val() || "-";
+    let wa = $('#inWaAdmin').val() || "";
+
+    let waText = wa ? `<a href="https://wa.me/${wa.replace(/[^0-9]/g, '')}" target="_blank">${wa}</a>` : "Silakan hubungi Admin Sekolah";
 
     Swal.fire({
         title: 'Helpdesk Sekolah',
         html: `
             <div class="text-start mt-3" style="font-size: 0.95rem;">
-                <p><i class="fas fa-envelope text-primary me-2"></i> <strong>Email:</strong><br> ${email}</p>
-                <p><i class="fab fa-whatsapp text-success me-2"></i> <strong>WhatsApp Admin:</strong><br> Silakan hubungi Admin Sekolah</p>
+                <p><i class="fas fa-phone-alt text-secondary me-2"></i> <strong>No Telp:</strong><br> <a href="tel:${telp}">${telp}</a></p>
+                <p><i class="fab fa-whatsapp text-success me-2"></i> <strong>WhatsApp Admin:</strong><br> ${waText}</p>
+                <p><i class="fas fa-envelope text-primary me-2"></i> <strong>Email:</strong><br> <a href="mailto:${email}">${email}</a></p>
                 <p><i class="fas fa-globe text-info me-2"></i> <strong>Website:</strong><br> <a href="http://${web}" target="_blank">${web}</a></p>
             </div>
         `,
@@ -2327,15 +2425,27 @@ window.promptSaveArsipKeluar = function (dataObj, outBlob, fileName, isOnline) {
             const currentUser = localStorage.getItem('sidimas_user') || 'Admin';
             const idBaru = (isOnline ? 'ONLINE_' : 'LOCAL_') + new Date().getTime();
 
+            let perihalAuto = dataObj.perihal || dataObj.isiUmum || dataObj.acaraDetail || dataObj.namaBarang || dataObj.namaPejabatLama || dataObj.suketHal || dataObj.isiSk || '-';
+            let uraianAuto = 'Otomatis digenerate dari form Buat Surat';
+            if (dataObj.pilihJenisSurat) {
+                let temp = dataObj.pilihJenisSurat.toLowerCase();
+                if (temp.includes('sppd') || temp.includes('perjalanan')) uraianAuto = 'Untuk mengikuti: ' + (dataObj.perihal || '-');
+                else if (temp.includes('tugas') || temp.includes('spt')) uraianAuto = 'Pelaksanaan tugas: ' + (dataObj.isiUmum || '-');
+                else if (temp.includes('undangan')) uraianAuto = 'Undangan: ' + (dataObj.perihal || '-');
+                else if (temp.includes('keterangan')) uraianAuto = 'Surat Keterangan: ' + (dataObj.suketHal || dataObj.perihal || '-');
+                else if (temp.includes('keputusan') || temp.includes('sk')) uraianAuto = 'Keputusan tentang: ' + (dataObj.isiSk || '-');
+            }
+            let tujuanAuto = dataObj.tujuanNama || dataObj.tujuanJabatan || dataObj.tujuanTempat || dataObj.namaPihakKedua || 'Kepada Yth.';
+
             let dataSimpan = {
                 jenisForm: 'keluar',
                 idSurat: idBaru,
                 tglSuratKeluar: dataObj.inpTglSaja || dataObj.tanggalSuratFull || dataObj.tglSuratSaja || dataObj.tglSelesai || new Date().toISOString().split('T')[0],
                 kodeKlasifikasi: dataObj.kodeKlasifikasi || '-',
                 noSuratKeluar: dataObj.nomorFull || '-',
-                perihalKeluar: dataObj.perihal || dataObj.isiUmum || dataObj.acaraDetail || dataObj.namaBarang || dataObj.namaPejabatLama || '-',
-                tujuan: dataObj.tujuanNama || dataObj.tujuanTempat || dataObj.namaPihakKedua || '-',
-                uraianKeluar: 'Otomatis digenerate dari form Buat Surat',
+                perihalKeluar: perihalAuto,
+                tujuan: tujuanAuto,
+                uraianKeluar: uraianAuto,
                 keteranganKeluar: dataObj.pilihJenisSurat || '-',
                 fileLama: '-',
                 currentUser: currentUser,
@@ -2534,11 +2644,12 @@ function toggleModeSis() {
 }
 
 function addRowKolektif(tableId) {
+    let tID = tableId.replace('tbl', '').replace('Kolektif', '');
     let tr = `<tr>
-        <td><input type="text" class="form-control form-control-sm" name="kol${tableId.replace('tbl', '')}Nama[]"></td>
-        <td><input type="text" class="form-control form-control-sm" name="kol${tableId.replace('tbl', '')}Nip[]"></td>
-        <td><input type="text" class="form-control form-control-sm" name="kol${tableId.replace('tbl', '')}Pangkat[]"></td>
-        <td><input type="text" class="form-control form-control-sm" name="kol${tableId.replace('tbl', '')}Jabatan[]"></td><td><input type="text" class="form-control form-control-sm" name="kol${tableId.replace('tbl', '')}Ket[]"></td><td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button></td>
+        <td><input type="text" class="form-control form-control-sm" name="kol${tID}Nama[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="kol${tID}Nip[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="kol${tID}Pangkat[]"></td>
+        <td><input type="text" class="form-control form-control-sm" name="kol${tID}Jabatan[]"></td><td><input type="text" class="form-control form-control-sm" name="kol${tID}Ket[]"></td><td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()"><i class="fas fa-times"></i></button></td>
     </tr>`;
     $(`#${tableId} tbody`).append(tr);
 }
@@ -2565,5 +2676,12 @@ function toggleAtasNama() {
 
 // Sembunyikan tombol Sinkronisasi di versi Online
 $(document).ready(function () {
-    $('#btnSyncMain').addClass('d-none');
+    $('#btnSyncMain').hide().addClass('hide d-none');
+});
+
+$(document).ready(function () {
+    // Perbaikan DataTables yang menciut/tidak rapi saat berada di dalam Bootstrap Tabs
+    $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+        $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+    });
 });
