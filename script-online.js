@@ -1520,13 +1520,9 @@ function nav(p, el) {
         if (typeof loadKodeCustomTable === 'function') loadKodeCustomTable();
         if (typeof loadUsers === 'function') loadUsers();
 
-        // Hapus class active/show dari semua tab pane pengaturan agar tidak menyangkut (overlapping)
-        $('#settingTabsContent .tab-pane').removeClass('show active');
-
         // Aktifkan ulang tab pertama (Pengaturan Sistem) secara paksa
         const triggerEl = document.querySelector('#sistem-tab');
         if (triggerEl) {
-            $('#sistem').addClass('show active');
             const tab = bootstrap.Tab.getOrCreateInstance(triggerEl);
             tab.show();
         }
@@ -1767,29 +1763,41 @@ function loadUsers() {
     apiCall('getUsersList')
         .then(r => {
             let h = ''; let i = 1;
-            r.forEach(u => {
-                let roleStr = (u[2] || '').toString();
-                let badgeClass = roleStr.toLowerCase() === 'admin' ? 'bg-danger' : 'bg-info text-dark';
-
-                h += `<tr>
-                    <td class="text-center">${i++}</td>
-                    <td><span class="badge bg-dark fs-6 px-3 py-2 font-monospace">${u[0]}</span></td>
-                    <td>
-                        <div class="input-group input-group-sm" style="width: 200px;">
-                            <input type="password" class="form-control font-monospace" value="${u[1]}" readonly style="background-color: var(--bs-secondary); color: white; border: none; font-size: 1rem;">
-                            <button class="btn btn-secondary border-0" type="button" onclick="togglePassword(this)"><i class="fas fa-eye"></i></button>
-                        </div>
-                    </td>
-                    <td><span class="badge ${badgeClass} px-3 py-2">${roleStr}</span></td>
-                    <td class="text-muted small">${u[3] || '-'}</td>
-                    <td class="online-only">
-                        <button class="btn btn-sm btn-warning" onclick="modalUser('edit','${u[0]}','','${u[2]}','${u[3]}')" title="Edit"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-sm btn-danger" onclick="delUser('${u[0]}')" title="Hapus"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>`;
-            });
+            if (Array.isArray(r)) {
+                if (r.length === 0) {
+                    h = `<tr><td colspan="6" class="text-center text-muted">Belum ada akun.</td></tr>`;
+                } else {
+                    r.forEach(u => {
+                        let roleStr = (u[2] || '').toString();
+                        let badgeClass = roleStr.toLowerCase() === 'admin' ? 'bg-danger' : 'bg-info text-dark';
+                        h += `<tr>
+                            <td class="text-center">${i++}</td>
+                            <td><span class="badge bg-dark fs-6 px-3 py-2 font-monospace">${u[0]}</span></td>
+                            <td>
+                                <div class="input-group input-group-sm" style="width: 200px;">
+                                    <input type="password" class="form-control font-monospace" value="${u[1]}" readonly style="background-color: var(--bs-secondary); color: white; border: none; font-size: 1rem;">
+                                    <button class="btn btn-secondary border-0" type="button" onclick="togglePassword(this)"><i class="fas fa-eye"></i></button>
+                                </div>
+                            </td>
+                            <td><span class="badge ${badgeClass} px-3 py-2">${roleStr}</span></td>
+                            <td class="text-muted small">${u[3] || '-'}</td>
+                            <td class="online-only">
+                                <button class="btn btn-sm btn-warning" onclick="modalUser('edit','${u[0]}','','${u[2]}','${u[3]}')" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="delUser('${u[0]}')" title="Hapus"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>`;
+                    });
+                }
+            } else if (r && r.message) {
+                h = `<tr><td colspan="6" class="text-center text-danger">${r.message}</td></tr>`;
+            } else {
+                h = `<tr><td colspan="6" class="text-center text-danger">Gagal memuat data dari server (Respons tidak valid).</td></tr>`;
+            }
             $('#tbody-users').html(h);
             $('.online-only').show(); // Make sure aksi column is shown
+        })
+        .catch(e => {
+            $('#tbody-users').html(`<tr><td colspan="6" class="text-center text-danger">Error koneksi: ${e.message}</td></tr>`);
         });
 }
 
@@ -1889,11 +1897,15 @@ async function loadKodeCustomTable() {
     try {
         if (API_URL) {
             const res = await apiCall('getKodeCustom');
-            if (res.status === 'success' || res.success) {
+            if (res && (res.status === 'success' || res.success)) {
                 await localDB.kodeCustom.clear();
                 if (res.data && res.data.length > 0) {
                     await localDB.kodeCustom.bulkPut(res.data);
                 }
+            } else if (res && res.message) {
+                tbody = `<tr><td colspan="4" class="text-center text-danger">Server Error: ${res.message}</td></tr>`;
+                $('#tbody-kodecustom').html(tbody);
+                return;
             }
         }
 
@@ -1914,7 +1926,7 @@ async function loadKodeCustomTable() {
             tbody = '<tr><td colspan="4" class="text-center text-muted">Belum ada data kode klasifikasi daerah.</td></tr>';
         }
     } catch (e) {
-        tbody = '<tr><td colspan="4" class="text-center text-danger">Gagal memuat data kode klasifikasi daerah.</td></tr>';
+        tbody = `<tr><td colspan="4" class="text-center text-danger">Error memuat data: ${e.message || e}</td></tr>`;
     }
     $('#tbody-kodecustom').html(tbody);
 }
