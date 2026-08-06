@@ -31,8 +31,11 @@ function initTenantRouting() {
         // Jika URL tidak ada ?id=, cek apakah sebelumnya sudah pernah masuk
         API_URL = localStorage.getItem('sidimas_api_url');
 
-        // Jika belum ada URL API, beri nilai default "demo" agar user tidak terkunci
-        if (!API_URL) {
+        // Cek apakah URL yang tersimpan masih ada di dalam DAFTAR_BACKEND yang baru
+        let isValid = Object.values(DAFTAR_BACKEND).includes(API_URL);
+
+        // Jika belum ada URL API atau URL sudah usang (tidak ada di daftar), beri nilai default "demo"
+        if (!API_URL || !isValid) {
             API_URL = DAFTAR_BACKEND["demo"] || "";
             if (API_URL) {
                 localStorage.setItem('sidimas_api_url', API_URL);
