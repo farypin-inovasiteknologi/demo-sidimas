@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sidimas-cache-v31';
+const CACHE_NAME = 'sidimas-cache-v32';
 
 self.addEventListener('install', (event) => {
   // Langsung update jika ada versi sw.js baru tanpa harus ditutup aplikasinya
