@@ -229,6 +229,8 @@ $(document).ready(function () {
 
     // Sembunyikan tombol sinkronisasi karena online version real-time
     $('#btnSyncMain').hide();
+    $('.offline-only').hide();
+    $('.online-only').show();
 
     const dateNow = new Date();
     const offset = dateNow.getTimezoneOffset() * 60000;
